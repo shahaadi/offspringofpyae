@@ -8,7 +8,7 @@ class Database:
         self._db = None
 
     def load_db(self, fpath: str) -> None:
-        assert isinstance(self._db, None), 'Database already loaded. Use switch_db to switch databases'
+        assert self._db == None, 'Database already loaded. Use switch_db to switch databases'
         assert isinstance(fpath, str), 'Fpath must be of string type'
 
         with open(fpath, mode="rb") as open_file:
