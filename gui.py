@@ -11,7 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 def record_microphone():
-    global entry_duration, sampling_rate, ax
+    global entry_duration, sampling_rate
     duration = entry_duration.get()
     if duration:
         try:
@@ -26,22 +26,35 @@ def record_microphone():
         print("Please enter a duration value.")
 
 def upload_file():
-    global ax
     file_path = filedialog.askopenfilename(initialdir="./", title="Select Recording File", filetypes=(("Audio Files", "*.wav"), ("Audio Files", "*.mp3"), ("All Files", "*.*")))
     samples, sampling_rate = sample.fileInput(file_path)
     update_spectrogram(samples, sampling_rate)
 
 def update_spectrogram(samples, sampling_rate):
-    global peaks, ax
+    global peaks, ax, fig
     peaks, fig, ax = peak.spectrogram_plot(samples, sampling_rate)
 
     canvas.figure = fig
     canvas.draw()
 
+def load_database():
+    # Code to load the database
+    pass
 
+def save_database():
+    # Code to save the database
+    pass
+
+def add_song():
+    # Code to add a song to the current database
+    pass
+
+def match_song():
+    # Code to match a song
+    pass
 
 def create_gui(window):
-    global entry_duration, ax, canvas
+    global entry_duration, ax, canvas, fig
 
     # Create labels and entry fields for parameters
     label_duration = tk.Label(window, text="Duration (seconds):")
@@ -50,6 +63,12 @@ def create_gui(window):
     # Create buttons for microphone recording and file upload
     microphone_button = tk.Button(window, text="Record from Microphone", command=record_microphone)
     upload_button = tk.Button(window, text="Upload Recording File", command=upload_file)
+
+    load_button = tk.Button(window, text="Load Database", command=load_database)
+    save_button = tk.Button(window, text="Save Database", command=save_database)
+    add_song_button = tk.Button(window, text="Add Song to Database", command=add_song)
+    match_song_button = tk.Button(window, text="Match Song", command=match_song)
+
 
     # Create a figure and axis for the spectrogram plot
     fig = plt.Figure(figsize=(8, 4), dpi=80)
@@ -64,4 +83,8 @@ def create_gui(window):
     entry_duration.pack()
     microphone_button.pack()
     upload_button.pack()
+    load_button.pack()
+    save_button.pack()
+    add_song_button.pack()
+    match_song_button.pack()
     canvas.get_tk_widget().pack()
