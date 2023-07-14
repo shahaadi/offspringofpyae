@@ -10,15 +10,14 @@ from scipy.ndimage.morphology import iterate_structure
 
 # convert the signal into a spectrogram and run the peak_finding functions
 def spectrogram_plot(sample, sampling_rate):
-  data = np.hstack([np.frombuffer(i, np.int16) for i in sample])
 
   fig, ax = plt.subplots()
-  S, freqs, times, im = ax.specgram(data,
+  S, freqs, times, im = ax.specgram(sample,
                                     NFFT=4096,
                                     Fs=sampling_rate,
                                     window=mlab.window_hanning,
                                     noverlap=4096 // 2,
-                                    mode='magnitude')
+                                    mode='magnitude', scale='dB')
 
   ax.set_xlabel("time (seconds)")
   ax.set_ylabel("frequency (hertz)")
