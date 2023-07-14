@@ -9,6 +9,7 @@ import database as db
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from database import Database
+from metadata import MetaData
 
 db = Database()
 
@@ -33,8 +34,9 @@ def upload_file():
     update_spectrogram(samples, sampling_rate)
 
 def update_spectrogram(samples, sampling_rate):
-    global peaks, ax, fig
+    global peaks, ax, fig, samples_len
     peaks, fig, ax = peak.spectrogram_plot(samples, sampling_rate)
+    samples_len = samples.shape[0]
 
     canvas.figure = fig
     canvas.draw()
@@ -49,18 +51,30 @@ def save_database():
 
 def add_song():
     # Code to add a song to the current database
-    pass
+    global entry_song_name, entry_artist_name, peaks, samples_len
+
+    song_name = entry_song_name.get()
+    artist_name = entry_artist_name.get()
+    fingerprint = fp.fingerprint(peaks, 15)
+    song_data = MetaData(song_name, artist_name, samples_len)
+    db.add_song(song_data, fingerprint)
 
 def match_song():
     # Code to match a song
-    return db.query_song(fingerprint(peaks))
+    global peaks
+    song_id = db.query_song(fingerprint(peaks, 15))
+    print(MetaData.getSong(song_id).name)
 
 def create_gui(window):
-    global entry_duration, ax, canvas, fig
+    global entry_duration, entry_song_name, entry_artist_name, ax, canvas, fig
 
     # Create labels and entry fields for parameters
     label_duration = tk.Label(window, text="Duration (seconds):")
     entry_duration = tk.Entry(window)
+    label_song_name = tk.Label(window, text="Song Name")
+    entry_song_name = tk.Entry(window)
+    label_artist_name = tk.Label(window, text="Artist Name")
+    entry_artist_name = tk.Entry(window)
 
     # Create buttons for microphone recording and file upload
     microphone_button = tk.Button(window, text="Record from Microphone", command=record_microphone)
@@ -83,6 +97,10 @@ def create_gui(window):
     # Pack the labels, entry fields, and buttons to the window
     label_duration.pack()
     entry_duration.pack()
+    label_song_name.pack()
+    entry_song_name.pack()
+    label_artist_name.pack()
+    entry_artist_name.pack()
     microphone_button.pack()
     upload_button.pack()
     load_button.pack()
