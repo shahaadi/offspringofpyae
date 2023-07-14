@@ -53,7 +53,8 @@ def add_song():
 
 def match_song():
     # Code to match a song
-    return db.query_song(fingerprint(global peaks))
+
+    return db.query_song(fp.fingerprint(peaks))
 
 def create_gui(window):
     global entry_duration, ax, canvas, fig
