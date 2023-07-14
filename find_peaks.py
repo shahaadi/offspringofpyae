@@ -31,7 +31,9 @@ def spectrogram_plot(sample, sampling_rate):
   
   peaks = find_peaks(spectrogram_logs, cutoff)
 
-  return peaks
+
+
+  return peaks, fig, ax
 
 
 # convert the spectrogram 2D array into a list of peaks (through a series of 3 functions)

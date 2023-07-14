@@ -17,7 +17,7 @@ def record_microphone():
         try:
             duration = float(duration)
             samples, sampling_rate = sample.micInput(duration)
-            update_spectrogram(samples, sampling_rate, ax)
+            update_spectrogram(samples, sampling_rate)
         except ValueError:
             # Handle the case when the input is not a valid float
             print("Invalid duration. Please enter a valid numeric value.")
@@ -29,22 +29,16 @@ def upload_file():
     global ax
     file_path = filedialog.askopenfilename(initialdir="./", title="Select Recording File", filetypes=(("Audio Files", "*.wav"), ("Audio Files", "*.mp3"), ("All Files", "*.*")))
     samples, sampling_rate = sample.fileInput(file_path)
-    update_spectrogram(samples, sampling_rate, ax)
+    update_spectrogram(samples, sampling_rate)
 
-def update_spectrogram(samples, sampling_rate, ax):
-    global peaks
-    peaks = peak.spectrogram_plot(samples, sampling_rate)
+def update_spectrogram(samples, sampling_rate):
+    global peaks, ax
+    peaks, fig, ax = peak.spectrogram_plot(samples, sampling_rate)
 
-    # Clear the existing plot
-    ax.cla()
-
-    # Plot the spectrogram
-    ax.imshow(peaks.T, aspect='auto', origin='lower', cmap='jet')
-    ax.set_xlabel('Time')
-    ax.set_ylabel('Frequency')
-
-    # Refresh the canvas
+    canvas.figure = fig
     canvas.draw()
+
+
 
 def create_gui(window):
     global entry_duration, ax, canvas

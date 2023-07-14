@@ -5,9 +5,9 @@ import database as db
 import tkinter as tk
 import gui as gui
 
-samples, sampling_rate = sample.micInput(5)
-peaks = peak.spectrogram_plot(samples, sampling_rate)
-fingerprints = fp.fingerprint(peaks, 15)
+# samples, sampling_rate = sample.micInput(5)
+# peaks = peak.spectrogram_plot(samples, sampling_rate)
+# fingerprints = fp.fingerprint(peaks, 15)
 
 
 
