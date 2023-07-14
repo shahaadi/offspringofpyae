@@ -40,12 +40,12 @@ def update_spectrogram(samples, sampling_rate):
     canvas.draw()
 
 def load_database():
-    # Code to load the database
-    pass
+    file_path = filedialog.askopenfilename(initialdir="./", title="Select Database File", filetypes=(("Database Files", "*.pkl"), ("All Files", "*.*")))
+    db.load_db(file_path)
 
 def save_database():
-    # Code to save the database
-    pass
+    file_path = filedialog.askopenfilename(initialdir="./", title="Select Database File", filetypes=(("Database Files", "*.pkl"), ("All Files", "*.*")))
+    db.save_db(file_path)
 
 def add_song():
     # Code to add a song to the current database
