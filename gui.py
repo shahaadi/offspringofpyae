@@ -8,7 +8,9 @@ import find_peaks as peak
 import database as db
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from database import Database
 
+db = Database()
 
 def record_microphone():
     global entry_duration, sampling_rate
