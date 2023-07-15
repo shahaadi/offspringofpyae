@@ -62,7 +62,7 @@ def add_song():
 def match_song():
     # Code to match a song
     global peaks
-    song_id = db.query_song(fingerprint(peaks, 15))
+    song_id = db.query_song(fp.fingerprint(peaks, 15))
     print(MetaData.getSong(song_id).name)
 
 def create_gui(window):
