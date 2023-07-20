@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import os
 from glob import glob
 
-file_paths = glob(os.path.join("./people_pictures", "*.jpg"))
+file_paths = glob(os.path.join("./week2 - y/people_pictures", "*.jpg"))
 
 images = []
 
@@ -20,7 +20,7 @@ for y in range(0, cols):
         plt.axis('off')
         if pic_num % rows == 0:
             result = str(file_paths[pic_num])
-            result = result[18:len(result) - 5]
+            result = result[28:len(result) - 5]
             plt.title(result)
         
         pic_num += 1
