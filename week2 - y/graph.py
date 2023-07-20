@@ -3,8 +3,9 @@ import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import cv2 
-#import the cosdist and maxcosdist
-#import the functions that finds faces and gets the descriptors
+import globals
+import max_cos_distance_threshold as dist
+from facenet_models import FacenetModels
 
 class Node:
     """ Describes a node in a graph, and the edges connected
@@ -123,15 +124,16 @@ def makeGraph(filePaths):
     #send images to method to get faces and discriptors
     #add descriptors to list
   for i in descriptors:
-    l1 = []
-    l2 = []
-    for j in descriptors:
-      if not (i == j):
-        #do maxcosdist on i j
-        #add to l1 if below threshold
-        #add 1/((cosdist)**2) to l2
-      neighbors.append(l1)
-      weights.append(l2)
+    l_neighbors = []
+    l_weights = []
+    for j in range(len(descriptors)):
+      if not (i == descriptors[j]):
+        cosdist = dist.cos_dist(i,j)
+        if cosdist <= globals.COS_DIST_THRESH:
+          l_neighbors.append(j)
+          l_weights.append(1/(cosdist**2))
+      neighbors.append(l_neighbors)
+      weights.append(l_weights)
   for i in range(len(images)):
     nodes.append(Node(i, neighbors[i], weights[i], images[i]))
   return nodes  
