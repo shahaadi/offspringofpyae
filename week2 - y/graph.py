@@ -121,8 +121,14 @@ def makeGraph(filePaths):
   for f in filePaths:
     images.append(cv2.imread())
   for i in images:
-    #send images to method to get faces and discriptors
-    #add descriptors to list
+    boxes, probabilities, landmarks = FacenetModel._model.detect(pic)
+
+    # confident boxes
+    valid_boxes = boxes[probabilities > face_prob_threshold] 
+
+    # run compute_descriptors from resnet
+    descriptor = FacenetModel._model.compute_descriptors(pic, valid_boxes)
+    descriptors.append(descriptors)
   for i in descriptors:
     l_neighbors = []
     l_weights = []
