@@ -7,11 +7,10 @@ from database import Database
 from model import Model
 from model import display_faces
 
-def load_database(filename):
-    database = Database()
-    if filename:
-        database.load_db(filename)
-    return database
+database = Database()
+database_filename = input("Enter the database filename (e.g., something.pkl): ")
+if database_filename:
+    database.load_db(database_filename)
 
 image_dir = input("Enter the path of the directory of images: ")
 
@@ -19,8 +18,7 @@ file_idx = 0
 image_fnames = os.listdir(image_dir)
 
 while input("Enter 'n' to terminate your session and save your database: ") != 'n' and file_idx < len(image_fnames):
-    for name in database.profile_db.keys():
-        print(f"Name: {name}")
+    database.display_database()
 
     path_to_image = image_dir + '/' + image_fnames[file_idx]
     name_image = "".join(re.findall("[a-zA-Z]+", os.path.splitext(image_fnames[file_idx])[0]))
