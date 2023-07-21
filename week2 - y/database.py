@@ -32,7 +32,7 @@ class Database:
       min_distance = np.min(distances)
       if min_distance <= cutoff:
         matched_index = np.argmin(distances)
-        matched_name = list(database.keys())[matched_index]
+        matched_name = list(self.keys())[matched_index]
         return matched_name, min_distance
       else:
         return "Unknown", min_distance
