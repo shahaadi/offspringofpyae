@@ -33,7 +33,7 @@ class Database:
       min_distance = np.min(distances)
       if min_distance <= cutoff:
         matched_index = np.argmin(distances)
-        matched_name = list(self.keys())[matched_index]
+        matched_name = list(self.profile_db.keys())[matched_index]
         return matched_name, min_distance
       else:
         return "Unknown", min_distance
@@ -42,7 +42,7 @@ class Database:
 
   # havent checked yet
   def load_db(self, fpath: str) -> None:
-    assert self.profile_db is None, 'Database already loaded. Use switch_db to switch databases'
+    assert len(self.profile_db.keys()) == 0, 'Database already loaded. Use switch_db to switch databases'
     assert isinstance(fpath, str), 'Fpath must be of string type'
 
     with open(fpath, mode="rb") as open_file:
