@@ -52,7 +52,7 @@ class Database:
     return None
 
   # havent checked yet
-  def save_db(self, db: dict, fpath: str) -> None:
+  def save_db(self, fpath: str) -> None:
     assert isinstance(
       self.profile_db,
       dict), 'Load a database first. Use load_db to load a database'
