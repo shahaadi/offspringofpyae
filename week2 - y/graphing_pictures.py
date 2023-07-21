@@ -3,6 +3,7 @@ import os
 from glob import glob
 from graph import Node, makeGraph
 from whisper_function import whispers
+import numpy as np
 
 # get file_paths and display graph with all pictures
 file_paths = glob(os.path.join("./week2 - y/people_pictures", "*.jpg"))
@@ -37,8 +38,10 @@ plt.show()
 
 
 # run the whisper function
-list_of_nodes = makeGraph(file_paths)
+list_of_nodes = makeGraph(file_paths, cos_dist_threshold=0.8, face_prob_threshold=0.9)
 whispers(list_of_nodes, 60)
+
+print(np.array([n.label for n in list_of_nodes]))
 
 
 # plot the result of the whisper function by category

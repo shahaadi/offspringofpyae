@@ -10,21 +10,20 @@ from graph import connected_components
 
 def propagate_label(node, neighbors, weights, list_of_nodes):
     label_weights = dict()
-    for n in neighbors:
-        if n.label in label_weights:
-            label_weights[n.label] += weights[n.id]
+    for n in range(0, len(neighbors)):
+        if list_of_nodes[neighbors[n]].label in label_weights:
+            label_weights[list_of_nodes[neighbors[n]].label] += weights[n]
         else:
-            label_weights[n.label] = weights[n.id]
+            label_weights[list_of_nodes[neighbors[n]].label] = weights[n]
     
     node.label = max(zip(label_weights.values(), label_weights.keys()))[1]
     
 def whispers(list_of_nodes, num_times):
     x = np.arange(num_times)
     y = []
-    for num in num_times:
+    for num in range(0, num_times):
         node = random.choice(list_of_nodes)
-        neighbors = [list_of_nodes[i] for i in node.neighbors]
-        propagate_label(node, neighbors, node.weights, list_of_nodes)
+        propagate_label(node, node.neighbors, node.weights, list_of_nodes)
         
         """
         print("Iteration #" + num + ":")

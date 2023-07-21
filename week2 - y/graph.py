@@ -120,26 +120,23 @@ def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
   count = 0
   for f in filePaths:
     count += 1
-    print(count)
     image = cv2.imread(f)
     # cv2.imshow("Image", image)
     boxes, probabilities, landmarks = model.detect(image)
-    print(probabilities)
-    print(boxes)
-    print(face_prob_threshold)
     
     # confident boxes
     valid_boxes = boxes[probabilities > face_prob_threshold] 
 
     # run compute_descriptors from resnet
     descriptor = model.compute_descriptors(image, valid_boxes)
-    descriptors.append(descriptor)
+    for d in descriptor:
+        descriptors.append(d)
   for i in descriptors:
     l_neighbors = []
     l_weights = []
     for j in range(len(descriptors)):
-      if not (i == descriptors[j]):
-        cosdist = dist.cos_dist(i,j)
+      if not (i == descriptors[j]).all():
+        cosdist = dist.cos_dist(i,descriptors[j].T)
         if cosdist <= cos_dist_threshold:
           l_neighbors.append(j)
           l_weights.append(1/(cosdist**2))
