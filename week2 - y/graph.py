@@ -4,8 +4,7 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import cv2 
 import max_cos_distance_threshold as dist
-import skimage.io as io
-from facenet_models import FacenetModels
+from facenet_models import FacenetModel
 
 class Node:
     """ Describes a node in a graph, and the edges connected
@@ -118,34 +117,31 @@ def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
   neighbors = []
   weights = []
   descriptors = []
+  count = 0
   for f in filePaths:
-    image = io.imread(str(f))
-    if image.shape[-1] == 4:
-        # Image is RGBA, where A is alpha -> transparency
-        # Must make image RGB.
-        image = image[..., :-1]  # png -> RGB
+    image = cv2.imread(f)
     boxes, probabilities, landmarks = model.detect(image)
-
+    
     # confident boxes
     valid_boxes = boxes[probabilities > face_prob_threshold] 
 
     # run compute_descriptors from resnet
     descriptor = model.compute_descriptors(image, valid_boxes)
     descriptors.append(descriptor)
-  for i in descriptors:
+  for i in range(len(descriptors)):
     l_neighbors = []
     l_weights = []
     for j in range(len(descriptors)):
-      if not (i == descriptors[j]):
-        cosdist = dist.cos_dist(i,j)
+      if not (i == j):
+        cosdist = dist.cos_dist(descriptors[i],descriptors[j].T)
         if cosdist <= cos_dist_threshold:
           l_neighbors.append(j)
           l_weights.append(1/(cosdist**2))
-      neighbors.append(l_neighbors)
-      weights.append(l_weights)
+    neighbors.append(l_neighbors)
+    weights.append(l_weights)
   for i in range(len(filePaths)):
     nodes.append(Node(i, neighbors[i], descriptors[i], weights[i], file_path = filePaths[i]))
-  return nodes  
+  return nodes
 
 
 def connected_components(nodes):
