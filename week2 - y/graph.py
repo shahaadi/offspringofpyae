@@ -128,12 +128,12 @@ def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
     # run compute_descriptors from resnet
     descriptor = model.compute_descriptors(image, valid_boxes)
     descriptors.append(descriptor)
-  for i in descriptors:
+  for i in range(len(descriptors)):
     l_neighbors = []
     l_weights = []
     for j in range(len(descriptors)):
-      if not (i == descriptors[j]).all():
-        cosdist = dist.cos_dist(i,descriptors[j].T)
+      if not (i == j):
+        cosdist = dist.cos_dist(descriptors[i],descriptors[j].T)
         if cosdist <= cos_dist_threshold:
           l_neighbors.append(j)
           l_weights.append(1/(cosdist**2))
