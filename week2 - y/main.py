@@ -19,3 +19,15 @@ if image.shape[-1] == 4:
 
 recognized_faces, _ = Model.recognize_faces(image, database)
 display_faces(image, recognized_faces)
+
+unknown_faces = [face for face in recognized_faces if face[0] == "Unknown"]
+# Add the unknown faces to the database
+for i, (name, _, _) in enumerate(unknown_faces, start=1):
+    add_to_db = input(f"Add unknown face {i} to the database? (y/n): ")
+    if add_to_db.lower() == "y":
+        name = input(f"Enter a name for unknown face {i}: ")
+        descriptor = [face[1] for face in recognized_faces if face[0] == "Unknown"][i-1]
+        database.add_profile(name, descriptor)
+
+print("Database after adding unknown faces:")
+database.display_database()

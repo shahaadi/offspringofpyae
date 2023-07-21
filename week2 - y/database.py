@@ -77,3 +77,7 @@ class Database:
       self.profile_db,
       dict), 'Load a database first. Use load_db to load a database'
     return self.profile_db
+  
+  def display_database(self):
+        for name, profile in self.profile_db.items():
+            print(f"Name: {name}, Descriptor: {profile.avg_descriptor}")
