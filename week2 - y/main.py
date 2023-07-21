@@ -31,7 +31,8 @@ class FaceRecognitionApp(tk.Tk):
         self.quit_button.pack()
 
     def select_image(self):
-        file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.jpg;*.png;*.jpeg")])
+        #file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.jpg;*.png;*.jpeg")])
+        file_path = filedialog.askopenfilename(filetypes=[("All Files", "*.*")])
         if file_path:
             self.image_path = file_path
             self.label_filename.config(text=f"Selected Image: {file_path}")
