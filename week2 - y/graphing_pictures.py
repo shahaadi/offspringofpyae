@@ -43,8 +43,8 @@ plt.show()
 
 
 # run the whisper function
-list_of_nodes = makeGraph(file_paths, cos_dist_threshold=0.9, face_prob_threshold=0.9)
-x_values, y_values = whispers(list_of_nodes, 150)
+list_of_nodes = makeGraph(file_paths, cos_dist_threshold=0.82, face_prob_threshold=0.9)
+x_values, y_values = whispers(list_of_nodes, 102)
 # plotting the number of connected_components
 plt.plot(x_values, y_values)
 plt.title("Number of Connected Components")
