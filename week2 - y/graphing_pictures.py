@@ -39,6 +39,9 @@ plt.show()
 
 # run the whisper function
 list_of_nodes = makeGraph(file_paths, cos_dist_threshold=0.8, face_prob_threshold=0.9)
+
+print(np.array([n.label for n in list_of_nodes]))
+
 whispers(list_of_nodes, 60)
 
 print(np.array([n.label for n in list_of_nodes]))
@@ -59,12 +62,12 @@ for no in ordered_nodes_list:
     if len(no) > max_len:
         max_len = len(no)
         
-rows = len(no)
+rows = max_len
 cols = len(ordered_nodes_list)
 for y in range(0, cols):
     for i in range(0, len(ordered_nodes_list[y])):
         plt.subplot(rows, cols, i * cols + y + 1)
-        image = plt.imread(ordered_nodes_list[y][i].filepath)
+        image = plt.imread(ordered_nodes_list[y][i].file_path)
         plt.imshow(image)
         plt.axis('off')
 plt.show()
