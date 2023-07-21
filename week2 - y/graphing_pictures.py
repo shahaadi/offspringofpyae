@@ -4,6 +4,7 @@ from glob import glob
 from graph import Node, makeGraph
 from whisper_function import whispers
 import numpy as np
+import random
 
 # get file_paths and display graph with all pictures
 file_paths = glob(os.path.join("./week2 - y/people_pictures", "*.jpg"))
@@ -14,6 +15,8 @@ c = 3
 while c < len(file_paths):
     del file_paths[c]
     c += 3
+
+random.shuffle(file_paths)
 
 for i in range(0, len(file_paths)):
     images.append(plt.imread(file_paths[i]))
@@ -27,10 +30,12 @@ for y in range(0, cols):
         plt.subplot(rows, cols, i * cols + y + 1)
         plt.imshow(images[pic_num])
         plt.axis('off')
+        """
         if pic_num % rows == 0:
             result = str(file_paths[pic_num])
             result = result[28:len(result) - 5]
             plt.title(result)
+        """
         
         pic_num += 1
         
@@ -66,7 +71,11 @@ for y in range(0, cols):
         plt.imshow(image)
         plt.axis('off')
         if i == 0:
-            result = ordered_nodes_list[y][i].label
+            result = str(ordered_nodes_list[y][i].file_path)
+            result = result[28:len(result) - 5]
+            result2 = str(ordered_nodes_list[y][i].label)
+            result = result + "(" + result2 + ")"
+            print(result)
             plt.title(result)
 plt.show()
 
