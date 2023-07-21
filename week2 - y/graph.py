@@ -4,7 +4,7 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import cv2 
 import max_cos_distance_threshold as dist
-from facenet_models import FacenetModels
+from facenet_models import FacenetModel
 
 class Node:
     """ Describes a node in a graph, and the edges connected
@@ -118,8 +118,9 @@ def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
   weights = []
   descriptors = []
   for f in filePaths:
-    images.append(cv2.imread())
+    images.append(cv2.imread(f))
   for i in images:
+    print(i)
     boxes, probabilities, landmarks = FacenetModel.detect(i)
 
     # confident boxes
