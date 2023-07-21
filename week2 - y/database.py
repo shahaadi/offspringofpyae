@@ -17,6 +17,11 @@ class Database:
     else:
       self.profile_db[name] = Profile(name, descriptor)
 
+  # deletes profile - makes sense
+  def del_profile(self, name):
+    if name in self.profile_db:
+      del self.profile_db[name]
+
   # not sure about this one - havent checked yet
   def find_match(self, descriptor, cutoff):
     if len(self.profile_db.values()) > 0:
