@@ -25,10 +25,11 @@ class Database:
   # not sure about this one - havent checked yet
   def find_match(self, descriptor, cutoff):
     if len(self.profile_db.values()) > 0:
+      db_descriptors = np.array([profile.avg_descriptor for profile in self.profile_db.values()])
       distances = dist.cos_dist(
-        descriptor,
-        np.array(
-          [profile.avg_descriptor for profile in self.profile_db.values()]))
+        db_descriptors,
+        descriptor
+      )
       min_distance = np.min(distances)
       if min_distance <= cutoff:
         matched_index = np.argmin(distances)
