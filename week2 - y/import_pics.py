@@ -7,10 +7,11 @@ from database import Database
 from model import Model
 from model import display_faces
 
-database = Database()
-database_filename = input("Enter the database filename (e.g., something.pkl): ")
-if database_filename:
-    database.load_db(database_filename)
+def load_database(filename):
+    database = Database()
+    if filename:
+        database.load_db(filename)
+    return database
 
 image_dir = input("Enter the path of the directory of images: ")
 

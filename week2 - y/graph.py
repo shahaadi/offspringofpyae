@@ -4,6 +4,7 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import cv2 
 import max_cos_distance_threshold as dist
+import skimage.io as io
 from facenet_models import FacenetModels
 
 class Node:
@@ -118,7 +119,11 @@ def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
   weights = []
   descriptors = []
   for f in filePaths:
-    image = cv2.imread(f)
+    image = io.imread(str(f))
+    if image.shape[-1] == 4:
+        # Image is RGBA, where A is alpha -> transparency
+        # Must make image RGB.
+        image = image[..., :-1]  # png -> RGB
     boxes, probabilities, landmarks = model.detect(image)
 
     # confident boxes
