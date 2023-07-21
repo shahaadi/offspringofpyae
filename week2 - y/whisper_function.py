@@ -33,9 +33,4 @@ def whispers(list_of_nodes, num_times):
         
         y.append(len(connected_components(list_of_nodes)))
     
-    # plotting the number of connected_components
-    fig, ax = plt.subplots()
-    y = np.array(y)
-    ax.set_title("Number of Connected Components")
-    ax.plot(x, y)
-    
+    return (x, y)    

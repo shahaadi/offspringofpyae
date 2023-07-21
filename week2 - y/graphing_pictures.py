@@ -43,8 +43,19 @@ plt.show()
 
 
 # run the whisper function
-list_of_nodes = makeGraph(file_paths, cos_dist_threshold=0.8, face_prob_threshold=0.9)
-whispers(list_of_nodes, 60)
+list_of_nodes = makeGraph(file_paths, cos_dist_threshold=0.9, face_prob_threshold=0.9)
+x_values, y_values = whispers(list_of_nodes, 150)
+# plotting the number of connected_components
+plt.plot(x_values, y_values)
+plt.title("Number of Connected Components")
+plt.show()
+
+"""
+fig, ax = plt.subplots()
+y_values = np.array(y_values)
+ax.set_title("Number of Connected Components")
+ax.plot(x_values, y_values)
+"""
 
 
 # plot the result of the whisper function by category
@@ -67,15 +78,18 @@ cols = len(ordered_nodes_list)
 for y in range(0, cols):
     for i in range(0, len(ordered_nodes_list[y])):
         plt.subplot(rows, cols, i * cols + y + 1)
+        plt.tight_layout()
         image = plt.imread(ordered_nodes_list[y][i].file_path)
         plt.imshow(image)
         plt.axis('off')
         if i == 0:
             result = str(ordered_nodes_list[y][i].file_path)
             result = result[28:len(result) - 5]
+            """
             result2 = str(ordered_nodes_list[y][i].label)
             result = result + "(" + result2 + ")"
             print(result)
+            """
             plt.title(result)
 plt.show()
 
