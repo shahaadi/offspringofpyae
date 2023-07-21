@@ -5,7 +5,7 @@ from model import Model
 from model import display_faces
 import tkinter as tk
 from tkinter import filedialog
-import gui 
+import gui
 import sys
 
 class FaceRecognitionApp(tk.Tk):
@@ -13,6 +13,7 @@ class FaceRecognitionApp(tk.Tk):
         super().__init__()
         self.title("Face Recognition App")
         self.database = gui.load_database(input("Enter the database filename (e.g., something.pkl): "))
+        self.additions_made = False  # Flag to track if additions were made to the database
         self.create_widgets()
 
     def create_widgets(self):
@@ -53,14 +54,16 @@ class FaceRecognitionApp(tk.Tk):
         if hasattr(self, "valid_descriptors"):
             name = input("Enter name of person in image: ")
             gui.add_to_database(name, self.valid_descriptors[0], self.database)
+            self.additions_made = True  # Set the flag to True
             print(f"{name} has been added to the database.")
 
     def quit(self):
-        # Save the database and close the GUI
-        database_filename = input("Enter the database filename (e.g., something.pkl): ")
-        if database_filename:
-            self.database.save_db(database_filename)
-            print("Database saved.")
+        # Save the database and close the GUI if additions have been made
+        if self.additions_made:
+            database_filename = input("Enter the database filename (e.g., something.pkl): ")
+            if database_filename:
+                self.database.save_db(database_filename)
+                print("Database saved.")
         super().quit()
 
 if __name__ == "__main__":
