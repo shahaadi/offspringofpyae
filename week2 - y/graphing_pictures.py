@@ -1,8 +1,13 @@
 from matplotlib import pyplot as plt
 import os
 from glob import glob
+from graph import Node, makeGraph
+from whisper_function import whispers
 
+# get file_paths and display graph with all pictures
 file_paths = glob(os.path.join("./week2 - y/people_pictures", "*.jpg"))
+
+print(file_paths)
 
 images = []
 
@@ -26,3 +31,78 @@ for y in range(0, cols):
         pic_num += 1
         
 plt.show()
+
+
+# run the whisper function
+list_of_nodes = makeGraph(file_paths)
+whispers(list_of_nodes, 60)
+
+
+# plot the result of the whisper function by category
+labels_list = []
+ordered_nodes_list = []
+for n in list_of_nodes:
+    if n.label in labels_list:
+        ordered_nodes_list[labels_list.index(n.label)].append(n)
+    else:
+        ordered_nodes_list.append([n])
+        labels_list.append(n.label)
+
+max_len = 0
+for no in ordered_nodes_list:
+    if len(no) > max_len:
+        max_len = len(no)
+        
+rows = len(no)
+cols = len(ordered_nodes_list)
+for y in range(0, cols):
+    for i in range(0, len(ordered_nodes_list[y])):
+        plt.subplot(rows, cols, i * cols + y + 1)
+        image = plt.imread(ordered_nodes_list[y][i].filepath)
+        plt.imshow(image)
+        plt.axis('off')
+plt.show()
+
+"""
+# testing final graph
+# run the whisper function
+one = ('./week2 - y/people_pictures\\beyonce1.jpg', 0)
+two = ('./week2 - y/people_pictures\\jackiechan4.jpg', 1)
+three = ('./week2 - y/people_pictures\\rihanna3.jpg', 2)
+four = ('./week2 - y/people_pictures\\beyonce2.jpg', 0)
+five = ('./week2 - y/people_pictures\\willsmith1.jpg', 3)
+six = ('./week2 - y/people_pictures\\willsmith2.jpg', 3)
+seven = ('./week2 - y/people_pictures\\rihanna2.jpg', 2)
+eight = ('./week2 - y/people_pictures\\jackiechan4.jpg', 1)
+nine = ('./week2 - y/people_pictures\\zendaya4.jpg', 4)
+ten = ('./week2 - y/people_pictures\\zendaya3.jpg', 4)
+eleven = ('./week2 - y/people_pictures\\rihanna1.jpg', 2)
+twelve = ('./week2 - y/people_pictures\\zendaya1.jpg', 4)
+thirteen = ('./week2 - y/people_pictures\\zendaya2.jpg', 4)
+list_of_nodes = [two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen]
+
+# plot the result of the whisper function by category
+labels_list = []
+ordered_nodes_list = []
+for n in list_of_nodes:
+    if n[1] in labels_list:
+        ordered_nodes_list[labels_list.index(n[1])].append(n)
+    else:
+        ordered_nodes_list.append([n])
+        labels_list.append(n[1])
+
+max_len = 0
+for no in ordered_nodes_list:
+    if len(no) > max_len:
+        max_len = len(no)
+        
+rows = len(no)
+cols = len(ordered_nodes_list)
+for y in range(0, cols):
+    for i in range(0, len(ordered_nodes_list[y])):
+        plt.subplot(rows, cols, i * cols + y + 1)
+        image = plt.imread(ordered_nodes_list[y][i][0])
+        plt.imshow(image)
+        plt.axis('off')
+plt.show()
+"""
