@@ -39,12 +39,7 @@ plt.show()
 
 # run the whisper function
 list_of_nodes = makeGraph(file_paths, cos_dist_threshold=0.8, face_prob_threshold=0.9)
-
-print(np.array([n.label for n in list_of_nodes]))
-
 whispers(list_of_nodes, 60)
-
-print(np.array([n.label for n in list_of_nodes]))
 
 
 # plot the result of the whisper function by category

@@ -137,8 +137,8 @@ def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
         if cosdist <= cos_dist_threshold:
           l_neighbors.append(j)
           l_weights.append(1/(cosdist**2))
-      neighbors.append(l_neighbors)
-      weights.append(l_weights)
+    neighbors.append(l_neighbors)
+    weights.append(l_weights)
   for i in range(len(filePaths)):
     nodes.append(Node(i, neighbors[i], descriptors[i], weights[i], file_path = filePaths[i]))
   return nodes
