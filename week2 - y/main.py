@@ -4,9 +4,10 @@ from database import Database
 from model import Model
 from model import display_faces
 
-# database_filename = input("Enter the database filename (e.g., something.pkl): ")
-# database = db.load_db(database_filename)
 database = Database()
+database_filename = input("Enter the database filename (e.g., something.pkl): ")
+if database_filename:
+    database.load_db(database_filename)
 
 path_to_image = input("Enter the path to the image: ")
 
@@ -17,7 +18,7 @@ if image.shape[-1] == 4:
     # Must make image RGB.
     image = image[..., :-1]  # png -> RGB
 
-recognized_faces, _ = Model.recognize_faces(image, database)
+recognized_faces, _ = Model.recognize_faces(image, database, cos_dist_threshold=0.8, face_prob_threshold=0.9)
 display_faces(image, recognized_faces)
 
 unknown_faces = [face for face in recognized_faces if face[0] == "Unknown"]

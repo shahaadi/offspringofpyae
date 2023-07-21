@@ -31,7 +31,7 @@ class Model:
             valid_descriptors.append(descriptor)
         return recognized_faces, valid_descriptors
 
-def display_faces(pic: np.ndarray, recognized_faces: list) -> None:
+def display_faces(pic: np.ndarray, recognized_faces: list, wait_key_time: int = 0) -> None:
     # recognized_faces is a list of tuples that contains name of the person
     # (Unknown if not found), distance between face descriptor of recognized
     # face and closest match in database, and bounding box coordinates
@@ -56,4 +56,4 @@ def display_faces(pic: np.ndarray, recognized_faces: list) -> None:
         )
 
     cv2.imshow("Recognized Faces", pic_copy)
-    cv2.waitKey(10)
+    cv2.waitKey(wait_key_time)
