@@ -35,17 +35,17 @@ def display_faces(pic: np.ndarray, recognized_faces: list) -> None:
     # face and closest match in database, and bounding box coordinates
     # can change format later if necessary
     for name, distance, box in recognized_faces:
-        x, y, w, h = box
-        x = int(x)
-        y = int(y)
-        w = int(w)
-        h = int(h)
+        x1, y1, x2, y2 = box
+        x1 = int(x1)
+        y1 = int(y1)
+        x2 = int(x2)
+        y2 = int(y2)
         #green box if match, red box if Unknown
         rect_color = (0, 255, 0) if name != "Unknown" else (0, 0, 255) 
-        pic = cv2.rectangle(pic, (x,y), (x+w, y+h), rect_color, 2)
+        pic = cv2.rectangle(pic, (x1,y1), (x2, y2), rect_color, 2)
         text = f"{name} - Distance: {distance: .2f}" if name != "Unknown" else "Unknown"
         pic = cv2.putText(
-          pic, text, (x, y - 10),
+          pic, text, (x1, y1 - 10),
           cv2.FONT_HERSHEY_SIMPLEX, 0.5, rect_color, 2
         )
 
