@@ -112,21 +112,20 @@ def plot_graph(graph, adj):
   
   
 def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
+  model = FacenetModel()
   nodes = []
-  images = []
   neighbors = []
   weights = []
   descriptors = []
   for f in filePaths:
-    images.append(cv2.imread())
-  for i in images:
-    boxes, probabilities, landmarks = FacenetModel.detect(i)
+    image = cv2.imread(f)
+    boxes, probabilities, landmarks = model.detect(image)
 
     # confident boxes
     valid_boxes = boxes[probabilities > face_prob_threshold] 
 
     # run compute_descriptors from resnet
-    descriptor = FacenetModel.compute_descriptors(i, valid_boxes)
+    descriptor = model.compute_descriptors(image, valid_boxes)
     descriptors.append(descriptors)
   for i in descriptors:
     l_neighbors = []
@@ -139,9 +138,9 @@ def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
           l_weights.append(1/(cosdist**2))
       neighbors.append(l_neighbors)
       weights.append(l_weights)
-  for i in range(len(images)):
-    nodes.append(Node(i, neighbors[i], weights[i], images[i], file_path = filePaths[i]))
-  return nodes 
+  for i in range(len(filePaths)):
+    nodes.append(Node(i, neighbors[i], descriptors[i], weights[i], file_path = filePaths[i]))
+  return nodes  
 
 
 def connected_components(nodes):
