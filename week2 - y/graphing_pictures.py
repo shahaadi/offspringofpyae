@@ -65,6 +65,9 @@ for y in range(0, cols):
         image = plt.imread(ordered_nodes_list[y][i].file_path)
         plt.imshow(image)
         plt.axis('off')
+        if i == 0:
+            result = ordered_nodes_list[y][i].label
+            plt.title(result)
 plt.show()
 
 """
