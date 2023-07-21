@@ -42,13 +42,14 @@ def display_faces(pic: np.ndarray, recognized_faces: list) -> None:
         y2 = int(y2)
         #green box if match, red box if Unknown
         rect_color = (0, 255, 0) if name != "Unknown" else (0, 0, 255) 
-        pic = cv2.rectangle(pic, (x1,y1), (x2, y2), rect_color, 2)
+        pic_copy = pic.copy()
+        pic_copy = cv2.rectangle(pic_copy, (x1,y1), (x2, y2), rect_color, 2)
         text = f"{name} - Distance: {distance: .2f}" if name != "Unknown" else "Unknown"
-        pic = cv2.putText(
-          pic, text, (x1, y1 - 10),
+        pic_copy = cv2.putText(
+          pic_copy, text, (x1, y1 - 10),
           cv2.FONT_HERSHEY_SIMPLEX, 0.5, rect_color, 2
         )
 
-    cv2.imshow("Recognized Faces", pic)
+    cv2.imshow("Recognized Faces", pic_copy)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
