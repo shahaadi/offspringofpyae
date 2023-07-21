@@ -18,18 +18,21 @@ class Database:
       self.profile_db[name] = Profile(name, descriptor)
 
   # not sure about this one - havent checked yet
-  def find_match(self, descriptor, database, cutoff):
-    distances = dist.cos_dist(
-      descriptor,
-      np.array(
-        [profile.avg_descriptor for profile in self.profile_db.values()]))
-    min_distance = np.min(distances)
-    if min_distance <= cutoff:
-      matched_index = np.argmin(distances)
-      matched_name = list(database.keys())[matched_index]
-      return matched_name, min_distance
+  def find_match(self, descriptor, cutoff):
+    if len(self.profile_db.values()) > 0:
+      distances = dist.cos_dist(
+        descriptor,
+        np.array(
+          [profile.avg_descriptor for profile in self.profile_db.values()]))
+      min_distance = np.min(distances)
+      if min_distance <= cutoff:
+        matched_index = np.argmin(distances)
+        matched_name = list(database.keys())[matched_index]
+        return matched_name, min_distance
+      else:
+        return "Unknown", min_distance
     else:
-      return "Unknown", min_distance
+      return "Unknown", 0
 
   # havent checked yet
   def load_db(self, fpath: str) -> None:

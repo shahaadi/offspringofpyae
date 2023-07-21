@@ -1,11 +1,12 @@
 import skimage.io as io
-import database as db
+from database import Database
 
-import model as model
+from model import Model
+from model import display_faces
 
-database_filename = input("Enter the database filename (e.g., something.pkl): ")
-database = db.load_db(database_filename)
-
+# database_filename = input("Enter the database filename (e.g., something.pkl): ")
+# database = db.load_db(database_filename)
+database = Database()
 
 path_to_image = input("Enter the path to the image: ")
 
@@ -16,6 +17,5 @@ if image.shape[-1] == 4:
     # Must make image RGB.
     image = image[..., :-1]  # png -> RGB
 
-
-recognized_faces = model.recognize_faces(image, database)
-model.display_faces(image, recognized_faces)
+recognized_faces = Model.recognize_faces(image, database)
+display_faces(image, recognized_faces)

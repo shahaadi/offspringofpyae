@@ -6,26 +6,26 @@ import database as db
 pic = cv2.imread('ricky_ray.jpg')
 
 class Model:
-    def __init__(self):
-        self._model = FacenetModel()
+    _model = FacenetModel()
 
-    def recognize_faces(self, pic: np.ndarray, database: dict,
+    @staticmethod
+    def recognize_faces(pic: np.ndarray, database: dict,
                         cos_dist_threshold: float = 0.5,
                         face_prob_threshold: float = 0.5) -> list:
     
-        boxes, probabilities, landmarks = self._model.detect(pic)
+        boxes, probabilities, landmarks = Model._model.detect(pic)
 
         # confident boxes
         valid_boxes = boxes[probabilities > face_prob_threshold] 
 
         # run compute_descriptors from resnet
-        descriptors = self._model.compute_descriptors(pic, valid_boxes)
+        descriptors = Model._model.compute_descriptors(pic, valid_boxes)
 
         recognized_faces = []
 
         for descriptor, box in zip(descriptors, valid_boxes):
             # match function from database
-            name, distance = db.find_match(descriptor, database, cos_dist_threshold) 
+            name, distance = database.find_match(descriptor, cos_dist_threshold) 
             recognized_faces.append((name, distance, box))
         return recognized_faces
 
@@ -36,6 +36,10 @@ def display_faces(pic: np.ndarray, recognized_faces: list) -> None:
     # can change format later if necessary
     for name, distance, box in recognized_faces:
         x, y, w, h = box
+        x = int(x)
+        y = int(y)
+        w = int(w)
+        h = int(h)
         #green box if match, red box if Unknown
         rect_color = (0, 255, 0) if name != "Unknown" else (0, 0, 255) 
         pic = cv2.rectangle(pic, (x,y), (x+w, y+h), rect_color, 2)
