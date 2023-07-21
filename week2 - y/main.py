@@ -5,13 +5,13 @@ from model import Model
 from model import display_faces
 import tkinter as tk
 from tkinter import filedialog
-import import_pics 
+import gui 
 
 class FaceRecognitionApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Face Recognition App")
-        self.database = import_pics.load_database(input("Enter the database filename (e.g., something.pkl): "))
+        self.database = gui.load_database(input("Enter the database filename (e.g., something.pkl): "))
         self.create_widgets()
 
     def create_widgets(self):
@@ -40,13 +40,13 @@ class FaceRecognitionApp(tk.Tk):
 
     def recognize_faces(self):
         if hasattr(self, "image_path"):
-            recognized_faces, valid_descriptors = import_pics.recognize_and_display_faces(self.image_path, self.database)
+            recognized_faces, valid_descriptors = gui.recognize_and_display_faces(self.image_path, self.database)
             self.valid_descriptors = valid_descriptors
 
     def add_to_database(self):
         if hasattr(self, "valid_descriptors"):
             name = input("Enter name of person in image: ")
-            import_pics.add_to_database(name, self.valid_descriptors[0], self.database)
+            gui.add_to_database(name, self.valid_descriptors[0], self.database)
             print(f"{name} has been added to the database.")
 
     def quit(self):
