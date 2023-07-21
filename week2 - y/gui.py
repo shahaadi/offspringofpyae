@@ -18,7 +18,7 @@ def recognize_and_display_faces(image_path, database, cos_dist_threshold: float 
         image = image[..., :-1]  # png -> RGB
 
     recognized_faces, valid_descriptors = Model.recognize_faces(image, database, cos_dist_threshold=cos_dist_threshold, face_prob_threshold=face_prob_threshold)
-    display_faces(image, recognized_faces)
+    display_faces(image, recognized_faces, destroy_windows=True)
     return recognized_faces, valid_descriptors
 
 def add_to_database(name, descriptor, database):
