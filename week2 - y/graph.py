@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import cv2 
-import globals
 import max_cos_distance_threshold as dist
 from facenet_models import FacenetModels
 
@@ -61,7 +60,7 @@ class Node:
         -------
         Tuple[Tensor, ...]
             A tuple containing all of the learnable parameters for our model"""
-        return (self.id, self.label, self.neighbors,self.weights,self.descriptor)
+        return (self.id, self.label, self.neighbors,self.weights,self.descriptor, self.file_path)
 
 def plot_graph(graph, adj):
     """ Use the package networkx to produce a diagrammatic plot of the graph, with
@@ -112,7 +111,7 @@ def plot_graph(graph, adj):
     return fig, ax
   
   
-def makeGraph(filePaths):
+def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
   nodes = []
   images = []
   neighbors = []
@@ -121,13 +120,13 @@ def makeGraph(filePaths):
   for f in filePaths:
     images.append(cv2.imread())
   for i in images:
-    boxes, probabilities, landmarks = FacenetModel._model.detect(pic)
+    boxes, probabilities, landmarks = FacenetModel.detect(i)
 
     # confident boxes
     valid_boxes = boxes[probabilities > face_prob_threshold] 
 
     # run compute_descriptors from resnet
-    descriptor = FacenetModel._model.compute_descriptors(pic, valid_boxes)
+    descriptor = FacenetModel.compute_descriptors(i, valid_boxes)
     descriptors.append(descriptors)
   for i in descriptors:
     l_neighbors = []
@@ -135,14 +134,15 @@ def makeGraph(filePaths):
     for j in range(len(descriptors)):
       if not (i == descriptors[j]):
         cosdist = dist.cos_dist(i,j)
-        if cosdist <= globals.COS_DIST_THRESH:
+        if cosdist <= cos_dist_threshold:
           l_neighbors.append(j)
           l_weights.append(1/(cosdist**2))
       neighbors.append(l_neighbors)
       weights.append(l_weights)
   for i in range(len(images)):
-    nodes.append(Node(i, neighbors[i], weights[i], images[i]))
-  return nodes  
+    nodes.append(Node(i, neighbors[i], weights[i], images[i], file_path = filePaths[i]))
+  return nodes 
+
 
 def connected_components(nodes):
   labels = []
