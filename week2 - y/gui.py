@@ -10,14 +10,14 @@ def load_database(filename):
         database.load_db(filename)
     return database
 
-def recognize_and_display_faces(image_path, database, cos_dist_threshold=0.6):
+def recognize_and_display_faces(image_path, database, cos_dist_threshold: float = 0.8, face_prob_threshold: float = 0.9):
     image = io.imread(str(image_path))
     if image.shape[-1] == 4:
         # Image is RGBA, where A is alpha -> transparency
         # Must make image RGB.
         image = image[..., :-1]  # png -> RGB
 
-    recognized_faces, valid_descriptors = Model.recognize_faces(image, database, cos_dist_threshold)
+    recognized_faces, valid_descriptors = Model.recognize_faces(image, database, cos_dist_threshold=cos_dist_threshold, face_prob_threshold=face_prob_threshold)
     display_faces(image, recognized_faces)
     return recognized_faces, valid_descriptors
 

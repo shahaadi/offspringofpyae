@@ -6,6 +6,7 @@ from model import display_faces
 import tkinter as tk
 from tkinter import filedialog
 import gui 
+import sys
 
 class FaceRecognitionApp(tk.Tk):
     def __init__(self):
@@ -31,8 +32,11 @@ class FaceRecognitionApp(tk.Tk):
         self.quit_button.pack()
 
     def select_image(self):
-        #file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.jpg;*.png;*.jpeg")])
-        file_path = filedialog.askopenfilename(filetypes=[("All Files", "*.*")])
+        if sys.platform == 'win32':
+            file_path = filedialog.askopenfilename(filetypes=[("Image Files", "*.jpg;*.png;*.jpeg")])
+        else:
+            file_path = filedialog.askopenfilename()
+
         if file_path:
             self.image_path = file_path
             self.label_filename.config(text=f"Selected Image: {file_path}")
@@ -41,6 +45,7 @@ class FaceRecognitionApp(tk.Tk):
 
     def recognize_faces(self):
         if hasattr(self, "image_path"):
+            self.database.display_database()
             recognized_faces, valid_descriptors = gui.recognize_and_display_faces(self.image_path, self.database)
             self.valid_descriptors = valid_descriptors
 
