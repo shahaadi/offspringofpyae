@@ -17,5 +17,5 @@ if image.shape[-1] == 4:
     # Must make image RGB.
     image = image[..., :-1]  # png -> RGB
 
-recognized_faces = Model.recognize_faces(image, database)
+recognized_faces, _ = Model.recognize_faces(image, database)
 display_faces(image, recognized_faces)

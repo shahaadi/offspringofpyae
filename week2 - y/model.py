@@ -22,12 +22,14 @@ class Model:
         descriptors = Model._model.compute_descriptors(pic, valid_boxes)
 
         recognized_faces = []
+        valid_descriptors = []
 
         for descriptor, box in zip(descriptors, valid_boxes):
             # match function from database
             name, distance = database.find_match(descriptor, cos_dist_threshold) 
             recognized_faces.append((name, distance, box))
-        return recognized_faces
+            valid_descriptors.append(descriptor)
+        return recognized_faces, valid_descriptors
 
 def display_faces(pic: np.ndarray, recognized_faces: list) -> None:
     # recognized_faces is a list of tuples that contains name of the person
