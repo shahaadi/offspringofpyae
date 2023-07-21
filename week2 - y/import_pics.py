@@ -20,9 +20,7 @@ while input("Enter 'n' to terminate your session and save your database: ") != '
         # Must make image RGB.
         image = image[..., :-1]  # png -> RGB
 
-    print(image.shape)
-
-    recognized_faces, valid_descriptors = Model.recognize_faces(image, database)
+    recognized_faces, valid_descriptors = Model.recognize_faces(image, database, cos_dist_threshold=0.6)
     display_faces(image, recognized_faces)
     if input(f"Enter 'y' to add {name_image} to the database at the box you see: ") == 'y':
         database.add_profile(name_image, valid_descriptors[0])
