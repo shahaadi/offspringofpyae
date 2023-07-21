@@ -49,8 +49,6 @@ class Database:
       db = pickle.load(open_file)
       assert isinstance(db, dict), 'Load a pickled dictionary for database'
       self.profile_db = db
-
-    print(self.profile_db.keys())
     return None
 
   # havent checked yet

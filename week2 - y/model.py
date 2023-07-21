@@ -36,6 +36,10 @@ def display_faces(pic: np.ndarray, recognized_faces: list) -> None:
     # (Unknown if not found), distance between face descriptor of recognized
     # face and closest match in database, and bounding box coordinates
     # can change format later if necessary
+
+    pic_copy = pic.copy()
+    pic_copy = cv2.cvtColor(pic_copy, cv2.COLOR_RGB2BGR)
+
     for name, distance, box in recognized_faces:
         x1, y1, x2, y2 = box
         x1 = int(x1)
@@ -43,8 +47,7 @@ def display_faces(pic: np.ndarray, recognized_faces: list) -> None:
         x2 = int(x2)
         y2 = int(y2)
         #green box if match, red box if Unknown
-        rect_color = (0, 255, 0) if name != "Unknown" else (0, 0, 255) 
-        pic_copy = pic.copy()
+        rect_color = (0, 255, 0) if name != "Unknown" else (0, 0, 255)
         pic_copy = cv2.rectangle(pic_copy, (x1,y1), (x2, y2), rect_color, 2)
         text = f"{name} - Distance: {distance: .2f}" if name != "Unknown" else "Unknown"
         pic_copy = cv2.putText(
@@ -53,5 +56,4 @@ def display_faces(pic: np.ndarray, recognized_faces: list) -> None:
         )
 
     cv2.imshow("Recognized Faces", pic_copy)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    cv2.waitKey(10)
