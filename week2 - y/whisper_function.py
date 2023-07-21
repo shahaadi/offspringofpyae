@@ -8,13 +8,13 @@ from graph import connected_components
 # ID (node's index in the adjacency matrix)
 # neighbors (a list of the ID’s of the node’s neighbors)
 
-def propagate_label(node, neighbors, weights):
+def propagate_label(node, neighbors, weights, list_of_nodes):
     label_weights = dict()
     for n in neighbors:
         if n.label in label_weights:
-            label_weights[n.label] += weights[node.ID]
+            label_weights[n.label] += weights[n.id]
         else:
-            label_weights[n.label] = weights[node.ID]
+            label_weights[n.label] = weights[n.id]
     
     node.label = max(zip(label_weights.values(), label_weights.keys()))[1]
     
@@ -23,8 +23,8 @@ def whispers(list_of_nodes, num_times):
     y = []
     for num in num_times:
         node = random.choice(list_of_nodes)
-        neighbors = [list_of_nodes[i] for i in node.neighbors] # need to confirm that index for nodes in list and matrix are the same
-        propagate_label(node, neighbors, node.weights)
+        neighbors = [list_of_nodes[i] for i in node.neighbors]
+        propagate_label(node, neighbors, node.weights, list_of_nodes)
         
         """
         print("Iteration #" + num + ":")
@@ -39,3 +39,4 @@ def whispers(list_of_nodes, num_times):
     y = np.array(y)
     ax.set_title("Number of Connected Components")
     ax.plot(x, y)
+    

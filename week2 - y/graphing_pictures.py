@@ -7,14 +7,17 @@ from whisper_function import whispers
 # get file_paths and display graph with all pictures
 file_paths = glob(os.path.join("./week2 - y/people_pictures", "*.jpg"))
 
-print(file_paths)
-
 images = []
+
+c = 3
+while c < len(file_paths):
+    del file_paths[c]
+    c += 3
 
 for i in range(0, len(file_paths)):
     images.append(plt.imread(file_paths[i]))
 
-rows = 4
+rows = 3
 cols = 10
 pic_num = 0
 
