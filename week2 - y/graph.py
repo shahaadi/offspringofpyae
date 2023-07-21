@@ -127,7 +127,7 @@ def makeGraph(filePaths, cos_dist_threshold = 0.5, face_prob_threshold = 0.5):
 
     # run compute_descriptors from resnet
     descriptor = model.compute_descriptors(image, valid_boxes)
-    descriptors.append(descriptors)
+    descriptors.append(descriptor)
   for i in descriptors:
     l_neighbors = []
     l_weights = []
