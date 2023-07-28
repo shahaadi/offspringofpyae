@@ -38,6 +38,12 @@ class ImageModel:
         embedding_conf = embedding_conf / mg.linalg.norm(embedding_conf)
         return (embedding_true, embedding_conf)
 
+    def predict(self, x):
+        with mg.no_autodiff:
+            embed = self.fc_layer(x)
+            embed = embed / mg.linalg.norm(embed)
+        return embed
+
     @property
     def parameters(self):
         return self.fc_layer.parameters
