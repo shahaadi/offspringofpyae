@@ -80,7 +80,7 @@ for epoch_cnt in range(EPOCHS):
           batch_caps[i] = em.embed(
             cocodata['annotations'][batch_caption_ids[i]]['caption'], idf, glove
           )
-      
+
         embedding_true, embedding_conf = model(batch_imgs, batch_confs)
 
         # compute loss and accuracy using margin loss ranking
@@ -89,8 +89,6 @@ for epoch_cnt in range(EPOCHS):
         loss.backward()
 
         optim.step()
-
-        # optim.zero_grad()
 
         print('epoch:', epoch_cnt, '\tbatch:', batch_cnt, '\tloss:', loss, '\tacc:', accuracy)
 
