@@ -44,6 +44,16 @@ class ImageModel:
             embed = embed / mg.linalg.norm(embed)
         return embed
 
+    def save_model(self, path):
+        """Path to .npz file where model parameters will be saved."""
+        with open(path, "wb") as f:
+            np.savez(f, *(x.data for x in self.parameters))
+
+    def load_model(self, path):
+        with open(path, "rb") as f:
+            for param, (name, array) in zip(self.parameters, np.load(f).items()):
+                param.data[:] = array
+
     @property
     def parameters(self):
         return self.fc_layer.parameters
