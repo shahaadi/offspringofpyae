@@ -25,7 +25,10 @@ class ImageDatabase:
     distances = []
     # use cosine similarity to find alignment between caption and image embedding
     for image_id, image_embedding in self.db.items():
-      dist = cosine_similarity([caption_embedding], [image_embedding])[0][0]
+      
+
+      dist = cosine_similarity([caption_embedding], image_embedding)[0][0]
+      
       distances.append((dist, image_id))
 
     # sort the distances in descending order with highest similarity values first
