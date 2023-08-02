@@ -56,14 +56,12 @@ for i in range(len(audio_paths)):
 # key: song_id (index of song in audio_paths)
 # value: [(cosine_similarity, second_song_id), (cosine_similarity, second_song_id)]
 distances = {i:[] for i in range(len(audio_paths))}
+num = 3*48000
 for i in range(len(distances)):
-    num = len(spec_list[i])//1000
     for j in range(i + 1, len(distances)):
-        if len(spec_list[j])//1000 < num:
-            num = len(spec_list[j]) // 1000
-        dist = cos_dist(spec_list[i][len(spec_list[i])-num:], spec_list[j][:num])
+        dist = cos_dist(spec_list[i][-num:], spec_list[j][:num])
         distances[i].append((dist, j))
-        dist = cos_dist(spec_list[j][len(spec_list[j])-num:], spec_list[i][:num])
+        dist = cos_dist(spec_list[j][-num:], spec_list[i][:num])
         distances[j].append((dist, i))
 
 # create the order in which the songs should be played
