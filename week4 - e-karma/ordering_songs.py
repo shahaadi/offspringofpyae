@@ -67,7 +67,7 @@ for i in range(len(distances)):
 
 # create the order in which the songs should be played
 for x in distances:
-    distances[x].sort(key=lambda y:y[0])
+    distances[x].sort(key=lambda y:y[1])
 index = random.randint(0, len(distances) - 1)
 order = [index] # list of numbers that represent the song index in audio_paths
 for _ in range(0, len(audio_paths) - 1):
@@ -82,8 +82,8 @@ print(order)
 mix = np.array([])    
 # play the songs in order
 for ind in order:
-    #song = AudioSegment.from_wav(audio_paths[ind])
-    #play(song)
+    # song = AudioSegment.from_wav(audio_paths[ind])
+    # play(song)
     mix = np.append(mix, audio_list[ind])
 Audio(mix, rate=44100)
 
