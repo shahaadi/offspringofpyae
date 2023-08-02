@@ -85,5 +85,5 @@ for ind in order:
     #song = AudioSegment.from_wav(audio_paths[ind])
     #play(song)
     mix = np.append(mix, audio_list[ind])
-Audio(mix)
+Audio(mix, rate=44100)
 
