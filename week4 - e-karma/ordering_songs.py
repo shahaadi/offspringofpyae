@@ -45,7 +45,7 @@ start_time = [43, 6, 17, 88, 128]
 end_time = [64,16, 42, 100, 155]
 audio_list = []
 for i in range(len(audio_paths)):
-    recorded_audio, sampling_rate = librosa.load(audio_paths[i], sr=44100, mono=True)
+    recorded_audio, sampling_rate = librosa.load(audio_paths[i], sr=48000, mono=True)
     recorded_audio = recorded_audio[start_time[i]*sampling_rate:end_time[i]*sampling_rate]
 
     spec_list.append(spectrogram(recorded_audio, sampling_rate))
@@ -85,5 +85,5 @@ for ind in order:
     # song = AudioSegment.from_wav(audio_paths[ind])
     # play(song)
     mix = np.append(mix, audio_list[ind])
-Audio(mix, rate=44100)
+Audio(mix, rate=48000)
 
