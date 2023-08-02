@@ -4,6 +4,7 @@ import matplotlib.mlab as mlab
 import numpy as np
 from pydub import AudioSegment
 from pydub.playback import play
+from IPython.display import Audio
 from os import path
 import random
 
@@ -24,7 +25,12 @@ def cos_dist(spec1, spec2):
 
 
 # testing multiple audio samples
-audio = ["FILE NAMES HERE"] # PUT FILEPATHS HERE (FILES MUST BE IN MP3 FORMAT)
+audio = ["Cartoon - On & On (feat. Daniel Levi) [NCS Release].mp3",
+         "DEAF KEV - Invincible [NCS Release].mp3",
+         "Different Heaven & EH!DE - My Heart [NCS Release].mp3",
+         "Janji - Heroes Tonight (feat. Johnning) [NCS Release].mp3",
+         "Warriyo - Mortals (feat. Laura Brehm) [NCS Release].mp3",
+         ] # PUT FILEPATHS HERE (FILES MUST BE IN MP3 FORMAT)
 audio_paths = []
 for a in range(len(audio)):
     src = audio[a]
@@ -35,16 +41,20 @@ for a in range(len(audio)):
     
 # list of 1D spectrograms for each song
 spec_list = []
+start_time = [43, 6, 17, 88, 128]
+end_time = [64,16, 42, 100, 155]
+audio_list = []
 for path in audio_paths:
     recorded_audio, sampling_rate = librosa.load(path, sr=44100, mono=True)
+    recorded_audio = recorded_audio[start_time[i]*sampling_rate:end_time[i]*sampling_rate]
+
     spec_list.append(spectrogram(recorded_audio, sampling_rate))
+    audio_list.append(recorded_audio)
 
 # dictionary containing cosine similarity for each pair of songs
 # key: song_id (index of song in audio_paths)
 # value: [(cosine_similarity, second_song_id), (cosine_similarity, second_song_id)]
-distances = dict()
-for x in range(len(audio_paths)):
-    distances[x] = []
+distances = {i:[] for i in range(len(audio_paths))}
 for i in range(len(distances)):
     num = len(spec_list[i])//1000
     for j in range(i + 1, len(distances)):
@@ -57,7 +67,7 @@ for i in range(len(distances)):
 
 # create the order in which the songs should be played
 for x in distances:
-    distances[x].sort(key=lambda y:y[1])
+    distances[x].sort(key=lambda y:y[0])
 index = random.randint(0, len(distances) - 1)
 order = [index] # list of numbers that represent the song index in audio_paths
 for _ in range(0, len(audio_paths) - 1):
@@ -69,8 +79,11 @@ for _ in range(0, len(audio_paths) - 1):
 
 print(order)
     
+mix = np.array([])    
 # play the songs in order
 for ind in order:
-    song = AudioSegment.from_wav(audio_paths[ind])
-    play(song)
+    #song = AudioSegment.from_wav(audio_paths[ind])
+    #play(song)
+    mix = np.append(mix, audio_list[ind])
+Audio(mix)
 
