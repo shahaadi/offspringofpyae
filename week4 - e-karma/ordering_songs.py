@@ -7,6 +7,7 @@ from pydub.playback import play
 from IPython.display import Audio
 from os import path
 import random
+from maad import util
 
 # produce a spectrogram from digital samples (NumPy-array) of a song/recording
 def spectrogram(sample, sampling_rate):
@@ -78,12 +79,18 @@ for _ in range(0, len(audio_paths) - 1):
     index = order[-1]
 
 print(order)
-    
-mix = np.array([])    
+
+
 # play the songs in order
+"""
+mix = np.array([])
 for ind in order:
-    # song = AudioSegment.from_wav(audio_paths[ind])
-    # play(song)
     mix = np.append(mix, audio_list[ind])
 Audio(mix, rate=48000)
+"""
+mix = []
+for ind in order:
+    mix.append(audio_list[ind])
+crossfaded_mix = util.crossfade_list(mix, 48000, fade_len=2)
+Audio(crossfaded_mix, rate=48000)
 
