@@ -50,12 +50,12 @@ spec_list = []
 #end_time = [64,16, 42, 100, 155]
 #audio_list = []
 #for i in range(len(audio_paths))):
-for i in range(len(audio_list)):
+for sample in audio_list:
     #recorded_audio, sampling_rate = librosa.load(audio_paths[i], sr=48000, mono=True)
     #recorded_audio = recorded_audio[start_time[i]*sampling_rate:end_time[i]*sampling_rate]
 
     #spec_list.append(spectrogram(recorded_audio, sampling_rate))
-    spec_list.append(spectrogram(audio_list[i]), 48000)
+    spec_list.append(spectrogram(sample), 48000)
     #audio_list.append(recorded_audio)
 
 # dictionary containing cosine similarity for each pair of songs
