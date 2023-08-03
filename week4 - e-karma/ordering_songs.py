@@ -25,6 +25,7 @@ def cos_dist(spec1, spec2):
     return dist
 
 
+"""
 # testing multiple audio samples
 audio = ["Cartoon - On & On (feat. Daniel Levi) [NCS Release].mp3",
          "DEAF KEV - Invincible [NCS Release].mp3",
@@ -39,23 +40,29 @@ for a in range(len(audio)):
     sound = AudioSegment.from_mp3(src)
     sound.export(dst, format="wav")
     audio_paths.append(dst)
+"""
+
+audio_list = # songs clips from the model (in the form of numpy arrays)
     
 # list of 1D spectrograms for each song
 spec_list = []
-start_time = [43, 6, 17, 88, 128]
-end_time = [64,16, 42, 100, 155]
-audio_list = []
-for i in range(len(audio_paths)):
-    recorded_audio, sampling_rate = librosa.load(audio_paths[i], sr=48000, mono=True)
-    recorded_audio = recorded_audio[start_time[i]*sampling_rate:end_time[i]*sampling_rate]
+#start_time = [43, 6, 17, 88, 128]
+#end_time = [64,16, 42, 100, 155]
+#audio_list = []
+#for i in range(len(audio_paths))):
+for i in range(len(audio_list)):
+    #recorded_audio, sampling_rate = librosa.load(audio_paths[i], sr=48000, mono=True)
+    #recorded_audio = recorded_audio[start_time[i]*sampling_rate:end_time[i]*sampling_rate]
 
-    spec_list.append(spectrogram(recorded_audio, sampling_rate))
-    audio_list.append(recorded_audio)
+    #spec_list.append(spectrogram(recorded_audio, sampling_rate))
+    spec_list.append(spectrogram(audio_list[i]), 48000)
+    #audio_list.append(recorded_audio)
 
 # dictionary containing cosine similarity for each pair of songs
 # key: song_id (index of song in audio_paths)
 # value: [(cosine_similarity, second_song_id), (cosine_similarity, second_song_id)]
-distances = {i:[] for i in range(len(audio_paths))}
+#distances = {i:[] for i in range(len(audio_paths))}
+distances = {i:[] for i in range(len(audio_list))}
 num = 3*48000
 for i in range(len(distances)):
     for j in range(i + 1, len(distances)):
@@ -69,7 +76,7 @@ for x in distances:
     distances[x].sort(key=lambda y:y[1])
 index = random.randint(0, len(distances) - 1)
 order = [index] # list of numbers that represent the song index in audio_paths
-for _ in range(0, len(audio_paths) - 1):
+for _ in range(0, len(audio_list) - 1):
     i = 0
     while distances[index][i][1] in order:
         i += 1
