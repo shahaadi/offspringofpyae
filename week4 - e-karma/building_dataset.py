@@ -8,21 +8,16 @@ import os
 # pulls song ids and titles
 def save_pre_data(channel_id, path):
     SEP = ';'
+    if not os.path.exists(path):
+        basecommand = f'python -m yt_dlp --flat-playlist -j --print-to-file "{channel_id};%(id)s;%(title)s;;" "{path}" "https://www.youtube.com/channel/{channel_id}"'
+        os.system(basecommand)
 
-    try:
-        os.remove(path)
-    except OSError:
-        pass
+        song_data = pd.read_csv(path, sep=SEP, header=None)
+        columns = ['channel_id', 'video_id', 'title', 'duration', 'view_count']
+        song_data.columns = columns
 
-    basecommand = f'python -m yt_dlp --flat-playlist -j --print-to-file "{channel_id};%(id)s;%(title)s;;" "{path}" "https://www.youtube.com/channel/{channel_id}"'
-    os.system(basecommand)
-
-    song_data = pd.read_csv(path, sep=SEP, header=None)
-    columns = ['channel_id', 'video_id', 'title', 'duration', 'view_count']
-    song_data.columns = columns
-
-    song_data[[f'datapoint_{i}' for i in range(100)]] = np.nan
-    song_data.to_csv(path, sep=SEP)
+        song_data[['t_step'] + [f'datapoint_{i}' for i in range(100)]] = np.nan
+        song_data.to_csv(path, sep=SEP)
 
 # pull song data and save to path
 def save_song_data(path):
@@ -45,34 +40,64 @@ def save_song_data(path):
                 content = requests.get(url).text
                 time_data = json.loads(content)
                 duration = time_data['items'][0]['contentDetails']['duration']
-                if duration > 600:
+                if duration > 600 or duration <= 60:
                     song_data = song_data.drop(index)
                 else:
-                    t_step = data['items'][0]['mostReplayed']['heatMarkers'][0]['heatMarkerRenderer']['markerDurationMillis']
+                    song_data.at[index, 't_step'] = data['items'][0]['mostReplayed']['heatMarkers'][0]['heatMarkerRenderer']['markerDurationMillis']
                     for i, heatMarker in enumerate(data['items'][0]['mostReplayed']['heatMarkers']):
                         song_data.at[index, f'datapoint_{i}'] = heatMarker['heatMarkerRenderer']['heatMarkerIntensityScoreNormalized']
-                    song_data.at[index, 'duration'] = duration
+                    if song_data.at[index, f'datapoint_{99}'] == 1:
+                        song_data = song_data.drop(index)
+                    else:
+                        song_data.at[index, 'duration'] = duration
 
-                    # get view_count of video
-                    url = f'https://yt.lemnoslife.com/noKey/videos?part=statistics&id={videoID}'
-                    content = requests.get(url).text
-                    data = json.loads(content)
-                    song_data.at[index, 'view_count'] = data['items'][0]['statistics']['viewCount']
-                    song_data.to_csv(path, sep=SEP)
+                        # get view_count of video
+                        url = f'https://yt.lemnoslife.com/noKey/videos?part=statistics&id={videoID}'
+                        content = requests.get(url).text
+                        data = json.loads(content)
+                        song_data.at[index, 'view_count'] = data['items'][0]['statistics']['viewCount']
+        song_data.to_csv(path, sep=SEP)
 
 # removes leading columns that are not channel_id
 def remove_irrev_cols(path):
-    song_data = pd.read_csv(path)
+    SEP = ';'
+    song_data = pd.read_csv(path, sep=SEP)
     while song_data.columns[0] != 'channel_id':
         song_data = song_data.drop(song_data.columns[0], axis=1)
+    song_data.to_csv(path, sep=SEP)
 
 # cleans data by removing non songs
 def remove_non_songs(channel_id, path):
-    keyword = None
-    if channel_id == ''
-    if keyword is not None:
-        for index in range(len(song_data['video_id']) - 1, -1, -1):
+    SEP = ';'
+    song_data = pd.read_csv(path, sep=SEP)
 
+    keyphrases = []
+    if channel_id == 'UCkRrhwhJ2Ia_ZlkTQ4XFWJA':
+        keyphrases.append('[No Copyright Music]')
+    if channel_id == 'UC4wUSUO1aZ_NyibCqIjpt0g':
+        keyphrases.append('[FMW Release')
+        keyphrases.append('Copyright Free Music')
+    if channel_id == 'UCEickjZj99-JJIU8_IJ7J-Q':
+        keyphrases.append('(Vlog No Copyright Music)')
+    if channel_id == 'UCQsBfyc5eOobgCzeY8bBzFg':
+        keyphrases.append('Royalty Free Music')
+    if channel_id == 'UC_aEa8K-EOJ3D6gOs7HcyNg':
+        keyphrases.append('[NCS Release]')
+    if channel_id == 'UCUFDNffZtBGisDliMx12fYw':
+        keyphrases.append('Royalty Free Music')
+    if channel_id == 'UCht8qITGkBvXKsR1Byln-wA':
+        keyphrases.append('(No Copyright Music)')
+
+    if len(keyphrases) != 0:
+        for index in range(len(song_data['video_id']) - 1, -1, -1):
+            keyphraseFound = False
+            for keyphrase in keyphrases:
+                if keyphrase in song_data.at[index, 'title']:
+                    keyphraseFound = True
+            if not keyphraseFound:
+                song_data = song_data.drop(index)
+
+    song_data.to_csv(path, sep=SEP)
 
 # all in one function
 def save_data(channel_id):
@@ -83,9 +108,10 @@ def save_data(channel_id):
 
 # merge all channel csvs
 def save_and_concat(channel_ids):
+    SEP - ';'
     dfs = []
     for channel_id in channel_ids:
         save_data(channel_id)
-        dfs.append(pd.read_csv(f'{channel_id}_output.csv', sep=';'))
+        dfs.append(pd.read_csv(f'{channel_id}_output.csv', sep=SEP))
     df = pd.concat(dfs)
-    df.to_csv('output.csv', sep=';')
+    df.to_csv('output.csv', sep=SEP)
