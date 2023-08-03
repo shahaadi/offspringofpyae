@@ -11,7 +11,6 @@ from maad import util
 
 # produce a spectrogram from digital samples (NumPy-array) of a song/recording
 def spectrogram(sample, sampling_rate):
- 
     fig, ax = plt.subplots()
     S, freqs, times, im = ax.specgram(sample, NFFT=4096, Fs=sampling_rate, window=mlab.window_hanning, noverlap=4096 // 2, mode='magnitude', scale='dB')
     
@@ -20,6 +19,8 @@ def spectrogram(sample, sampling_rate):
     
     return spectrogram_logs
 
+
+# calculate the cosine similarity between 2 spectrograms
 def cos_dist(spec1, spec2):
     dist = 1 - (spec1 @ spec2) / (np.linalg.norm(spec1) * np.linalg.norm(spec2))
     return dist
@@ -42,8 +43,8 @@ for a in range(len(audio)):
     audio_paths.append(dst)
 """
 
+
 audio_list = # songs clips from the model (in the form of numpy arrays)
-    
 # list of 1D spectrograms for each song
 spec_list = []
 #start_time = [43, 6, 17, 88, 128]
@@ -58,6 +59,7 @@ for sample in audio_list:
     spec_list.append(spectrogram(sample), 48000)
     #audio_list.append(recorded_audio)
 
+
 # dictionary containing cosine similarity for each pair of songs
 # key: song_id (index of song in audio_paths)
 # value: [(cosine_similarity, second_song_id), (cosine_similarity, second_song_id)]
@@ -71,6 +73,7 @@ for i in range(len(distances)):
         dist = cos_dist(spec_list[j][-num:], spec_list[i][:num])
         distances[j].append((dist, i))
 
+
 # create the order in which the songs should be played
 for x in distances:
     distances[x].sort(key=lambda y:y[1])
@@ -82,20 +85,33 @@ for _ in range(0, len(audio_list) - 1):
         i += 1
     order.append(distances[index][i][1])
     index = order[-1]
-
 print(order)
 
 
-# play the songs in order
-"""
-mix = np.array([])
-for ind in order:
-    mix = np.append(mix, audio_list[ind])
-Audio(mix, rate=48000)
-"""
+# fade in the first song and fade out the last song
+def fade_in(audio, sampling_rate=48000, duration=4.0):
+    length = int(duration*sampling_rate)
+    start = 0
+    end = start + length
+
+    fade_curve = np.linspace(0.0, 1.0, length)
+    audio[start:end] = audio[start:end] * fade_curve
+
+def fade_out(audio, sampling_rate=48000, duration=3.0):
+    length = int(duration*sampling_rate)
+    end = audio.shape[0]
+    start = end - length
+
+    fade_curve = np.linspace(1.0, 0.0, length)
+    audio[start:end] = audio[start:end] * fade_curve
+
+fade_out(audio_list[order[-1]])
+fade_in(audio_list[order[0]])
+   
+   
+# create the mix and play it
 mix = []
 for ind in order:
     mix.append(audio_list[ind])
 crossfaded_mix = util.crossfade_list(mix, 48000, fade_len=2)
 Audio(crossfaded_mix, rate=48000)
-
