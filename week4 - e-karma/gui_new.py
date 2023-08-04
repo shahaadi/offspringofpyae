@@ -15,7 +15,7 @@ from ordering_songs import create_mix
 from Spotify_Youtube_API import get_songs_artists, get_token, find_videoID
 from spectrogram_download import video_ids_spectrograms
 
-model = tf.keras.models.load_model('model/test.keras')
+model = tf.keras.models.load_model('week4 - e-karma/test.keras')
 
 global PAUSED
 PAUSED = False
@@ -43,6 +43,7 @@ def add_songs():
     spotify_string = urlparse(spotify_playlist).path.split('/')[-1]
     print(spotify_string)
     l = get_songs_artists(get_token(), spotify_string)
+    l = l[0:20]
     video_ids = find_videoID(l)
     audio, spectrograms = video_ids_spectrograms(video_ids)
     spectrograms = np.expand_dims(spectrograms, axis=-1)
