@@ -3,6 +3,8 @@ import pandas as pd
 import requests, json
 from yt_dlp import YoutubeDL
 from tqdm import tqdm
+import subprocess
+import math
 import os
 
 # pulls song ids and titles
@@ -17,7 +19,7 @@ def save_pre_data(channel_id, path):
         song_data.columns = columns
 
         song_data[['t_step'] + [f'datapoint_{i}' for i in range(100)]] = np.nan
-        song_data.to_csv(path, sep=SEP)
+        song_data.to_csv(path, sep=SEP, index=False)
 
 # pull song data and save to path
 def save_song_data(path):
@@ -33,7 +35,7 @@ def save_song_data(path):
             data = json.loads(content)
             print(videoID)
             if data['items'][0]['mostReplayed'] is None:
-                song_data = song_data.drop(index)
+                song_data.drop(index=index, inplace=True)
             else:
                 # get song_duration
                 url = f'https://yt.lemnoslife.com/videos?part=contentDetails&id={videoID}'
@@ -41,13 +43,13 @@ def save_song_data(path):
                 time_data = json.loads(content)
                 duration = time_data['items'][0]['contentDetails']['duration']
                 if duration > 600 or duration <= 60:
-                    song_data = song_data.drop(index)
+                    song_data.drop(index=index, inplace=True)
                 else:
                     song_data.at[index, 't_step'] = data['items'][0]['mostReplayed']['heatMarkers'][0]['heatMarkerRenderer']['markerDurationMillis']
                     for i, heatMarker in enumerate(data['items'][0]['mostReplayed']['heatMarkers']):
                         song_data.at[index, f'datapoint_{i}'] = heatMarker['heatMarkerRenderer']['heatMarkerIntensityScoreNormalized']
                     if song_data.at[index, f'datapoint_{99}'] == 1:
-                        song_data = song_data.drop(index)
+                        song_data.drop(index=index, inplace=True)
                     else:
                         song_data.at[index, 'duration'] = duration
 
@@ -56,15 +58,7 @@ def save_song_data(path):
                         content = requests.get(url).text
                         data = json.loads(content)
                         song_data.at[index, 'view_count'] = data['items'][0]['statistics']['viewCount']
-        song_data.to_csv(path, sep=SEP)
-
-# removes leading columns that are not channel_id
-def remove_irrev_cols(path):
-    SEP = ';'
-    song_data = pd.read_csv(path, sep=SEP)
-    while song_data.columns[0] != 'channel_id':
-        song_data = song_data.drop(song_data.columns[0], axis=1)
-    song_data.to_csv(path, sep=SEP)
+        song_data.to_csv(path, sep=SEP, index=False)
 
 # cleans data by removing non songs
 def remove_non_songs(channel_id, path):
@@ -72,46 +66,63 @@ def remove_non_songs(channel_id, path):
     song_data = pd.read_csv(path, sep=SEP)
 
     keyphrases = []
+    # Infraction
     if channel_id == 'UCkRrhwhJ2Ia_ZlkTQ4XFWJA':
-        keyphrases.append('[No Copyright Music]')
-    if channel_id == 'UC4wUSUO1aZ_NyibCqIjpt0g':
-        keyphrases.append('[FMW Release')
-        keyphrases.append('Copyright Free Music')
+        keyphrases.append('Copyright')
+        keyphrases.append('Royalty')
+    # FreeMusicWave - all music
+    # Vlog No Copyright Music
     if channel_id == 'UCEickjZj99-JJIU8_IJ7J-Q':
         keyphrases.append('(Vlog No Copyright Music)')
-    if channel_id == 'UCQsBfyc5eOobgCzeY8bBzFg':
-        keyphrases.append('Royalty Free Music')
+    # No Copyright Background Music - all music
+    # Royalty Free Music - No Copyright Music - all music
+    # Royalty Free Music [No Copyright Music] - all music
     if channel_id == 'UC_aEa8K-EOJ3D6gOs7HcyNg':
-        keyphrases.append('[NCS Release]')
-    if channel_id == 'UCUFDNffZtBGisDliMx12fYw':
-        keyphrases.append('Royalty Free Music')
+        keyphrases.append('Release')
+        keyphrases.append('Official')
+    # No Copyright Music - all music
+    # Audio Library
     if channel_id == 'UCht8qITGkBvXKsR1Byln-wA':
-        keyphrases.append('(No Copyright Music)')
+        keyphrases.append('Copyright')
 
     if len(keyphrases) != 0:
         for index in range(len(song_data['video_id']) - 1, -1, -1):
-            keyphraseFound = False
-            for keyphrase in keyphrases:
-                if keyphrase in song_data.at[index, 'title']:
-                    keyphraseFound = True
-            if not keyphraseFound:
-                song_data = song_data.drop(index)
+            if not any(keyphrase.lower() in song_data.at[index, 'title'].lower() for keyphrase in keyphrases):
+                song_data.drop(index=index, inplace=True)
 
-    song_data.to_csv(path, sep=SEP)
+    song_data.to_csv(path, sep=SEP, index=False)
 
 # all in one function
 def save_data(channel_id):
     save_pre_data(channel_id, f'{channel_id}_output.csv')
     save_song_data(f'{channel_id}_output.csv')
-    remove_irrev_cols(f'{channel_id}_output.csv')
     remove_non_songs(channel_id, f'{channel_id}_output.csv')
 
 # merge all channel csvs
-def save_and_concat(channel_ids):
-    SEP - ';'
+def save_and_concat(channel_ids=['UCkRrhwhJ2Ia_ZlkTQ4XFWJA',
+                                 'UC4wUSUO1aZ_NyibCqIjpt0g',
+                                 'UCEickjZj99-JJIU8_IJ7J-Q',
+                                 'UCnNWG_mv0-_u-65_uDV9tGw',
+                                 'UCQsBfyc5eOobgCzeY8bBzFg',
+                                 'UCyytiQuL-5S59OX1opqG-bQ',
+                                 'UC_aEa8K-EOJ3D6gOs7HcyNg',
+                                 'UCy-unM_4IUeSvmyaLrFPyWg',
+                                 'UCUFDNffZtBGisDliMx12fYw',
+                                 'UCht8qITGkBvXKsR1Byln-wA']):
+    SEP = ';'
     dfs = []
+
+    save_processes = []
     for channel_id in channel_ids:
-        save_data(channel_id)
+        save_command = ["python", "-c", "import building_dataset; building_dataset.save_data('{}')".format(channel_id)]
+        save_process = subprocess.Popen(save_command)
+        save_processes.append(save_process)
+
+    for save_process in save_processes:
+        save_process.wait()
+
+    for channel_id in channel_ids:
         dfs.append(pd.read_csv(f'{channel_id}_output.csv', sep=SEP))
+
     df = pd.concat(dfs)
-    df.to_csv('output.csv', sep=SEP)
+    df.to_csv('output.csv', sep=SEP, index=False)
