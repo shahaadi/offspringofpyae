@@ -93,10 +93,10 @@ def remove_non_songs(channel_id, path):
     song_data.to_csv(path, sep=SEP, index=False)
 
 # all in one function
-def save_data(channel_id):
-    save_pre_data(channel_id, f'{channel_id}_output.csv')
-    save_song_data(f'{channel_id}_output.csv')
-    remove_non_songs(channel_id, f'{channel_id}_output.csv')
+def save_data(channel_id, path):
+    save_pre_data(channel_id, path)
+    save_song_data(path)
+    remove_non_songs(channel_id, path)
 
 # merge all channel csvs
 def save_and_concat(channel_ids=['UCkRrhwhJ2Ia_ZlkTQ4XFWJA',
@@ -114,7 +114,7 @@ def save_and_concat(channel_ids=['UCkRrhwhJ2Ia_ZlkTQ4XFWJA',
 
     save_processes = []
     for channel_id in channel_ids:
-        save_command = ["python", "-c", "import building_dataset; building_dataset.save_data('{}')".format(channel_id)]
+        save_command = ["python", "-c", f"import building_dataset; building_dataset.save_data('{channel_id}', 'data/{channel_id}_output.csv')"]
         save_process = subprocess.Popen(save_command)
         save_processes.append(save_process)
 
@@ -122,7 +122,7 @@ def save_and_concat(channel_ids=['UCkRrhwhJ2Ia_ZlkTQ4XFWJA',
         save_process.wait()
 
     for channel_id in channel_ids:
-        dfs.append(pd.read_csv(f'{channel_id}_output.csv', sep=SEP))
+        dfs.append(pd.read_csv(f'data/{channel_id}_output.csv', sep=SEP))
 
     df = pd.concat(dfs)
     df.to_csv('output.csv', sep=SEP, index=False)
