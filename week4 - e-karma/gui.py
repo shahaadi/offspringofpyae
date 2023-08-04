@@ -40,6 +40,7 @@ def add_songs():
     print(SONG_LIST)
 
 def play_song():
+    """
     mp3_file = window.get('active')
     mp3_file = mp3_file
     pygame.mixer.music.load(mp3_file)
@@ -50,7 +51,6 @@ def play_song():
     print(mix)
     write('playlist.wav', 48000, mix)
     pygame.mixer.music.load('playlist.wav')
-    """
     pygame.mixer.music.play(loops=0)
     
 def stop_song():
