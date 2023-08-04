@@ -15,7 +15,7 @@ from ordering_songs import create_mix
 from Spotify_Youtube_API import get_songs_artists, get_token, find_videoID
 from spectrogram_download import video_ids_spectrograms
 
-model = tf.keras.models.load_model('week4 - e-karma/test.keras')
+model = tf.keras.models.load_model('week4 - e-karma/test1.keras')
 
 global PAUSED
 PAUSED = False
@@ -36,10 +36,19 @@ def prediction_to_index(pred, cutoff):
         end_idx = peak + np.argmax(post_dp)
     else:
         end_idx = good_dp.shape[0]
+
+    dif = end_idx - start_idx
+    if dif < 3:
+        if (start_idx + 3) > good_dp.shape[0]:
+            start_idx = end_idx - 3
+        else:
+            end_idx = start_idx + 3
+
     return start_idx, end_idx
 
 def add_songs():
-    spotify_playlist = text_box.get("1.0", "end-1c")
+    # spotify_playlist = text_box.get("1.0", "end-1c")
+    spotify_playlist = 'https://open.spotify.com/playlist/7IXaLrFAFxmUELfKUycf1H?si=5b9991759b0d479b'
     spotify_string = urlparse(spotify_playlist).path.split('/')[-1]
     print(spotify_string)
     l = get_songs_artists(get_token(), spotify_string)

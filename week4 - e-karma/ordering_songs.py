@@ -22,6 +22,8 @@ def spectrogram(sample, sampling_rate):
 
 # calculate the cosine similarity between 2 spectrograms
 def cos_dist(spec1, spec2):
+    print(spec1.shape)
+    print(spec2.shape)
     dist = 1 - (spec1 @ spec2) / (np.linalg.norm(spec1) * np.linalg.norm(spec2))
     return dist
 
@@ -56,7 +58,7 @@ def create_mix(audio):
         #recorded_audio = recorded_audio[start_time[i]*sampling_rate:end_time[i]*sampling_rate]
 
         #spec_list.append(spectrogram(recorded_audio, sampling_rate))
-        spec_list.append(spectrogram(sample), 48000)
+        spec_list.append(spectrogram(sample, 48000))
         #audio_list.append(recorded_audio)
 
 
@@ -65,7 +67,8 @@ def create_mix(audio):
     # value: [(cosine_similarity, second_song_id), (cosine_similarity, second_song_id)]
     #distances = {i:[] for i in range(len(audio_paths))}
     distances = {i:[] for i in range(len(audio_list))}
-    num = 3*48000
+    # num = 3*48000
+    num = 1000
     for i in range(len(distances)):
         for j in range(i + 1, len(distances)):
             dist = cos_dist(spec_list[i][-num:], spec_list[j][:num])
