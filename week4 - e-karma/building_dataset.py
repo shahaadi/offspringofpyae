@@ -66,21 +66,13 @@ def remove_non_songs(channel_id, path):
     song_data = pd.read_csv(path, sep=SEP)
 
     keyphrases = []
-    # Infraction
-    if channel_id == 'UCkRrhwhJ2Ia_ZlkTQ4XFWJA':
-        keyphrases.append('Copyright')
-        keyphrases.append('Royalty')
-    # FreeMusicWave - all music
     # Vlog No Copyright Music
     if channel_id == 'UCEickjZj99-JJIU8_IJ7J-Q':
         keyphrases.append('(Vlog No Copyright Music)')
-    # No Copyright Background Music - all music
-    # Royalty Free Music - No Copyright Music - all music
     # Royalty Free Music [No Copyright Music] - all music
     if channel_id == 'UC_aEa8K-EOJ3D6gOs7HcyNg':
         keyphrases.append('Release')
         keyphrases.append('Official')
-    # No Copyright Music - all music
     # Audio Library
     if channel_id == 'UCht8qITGkBvXKsR1Byln-wA':
         keyphrases.append('Copyright')
@@ -99,15 +91,9 @@ def save_data(channel_id, path):
     remove_non_songs(channel_id, path)
 
 # merge all channel csvs
-def save_and_concat(channel_ids=['UCkRrhwhJ2Ia_ZlkTQ4XFWJA',
-                                 'UC4wUSUO1aZ_NyibCqIjpt0g',
+def save_and_concat(channel_ids=['UC4wUSUO1aZ_NyibCqIjpt0g',
                                  'UCEickjZj99-JJIU8_IJ7J-Q',
-                                 'UCnNWG_mv0-_u-65_uDV9tGw',
-                                 'UCQsBfyc5eOobgCzeY8bBzFg',
-                                 'UCyytiQuL-5S59OX1opqG-bQ',
                                  'UC_aEa8K-EOJ3D6gOs7HcyNg',
-                                 'UCy-unM_4IUeSvmyaLrFPyWg',
-                                 'UCUFDNffZtBGisDliMx12fYw',
                                  'UCht8qITGkBvXKsR1Byln-wA']):
     SEP = ';'
     dfs = []
@@ -125,4 +111,4 @@ def save_and_concat(channel_ids=['UCkRrhwhJ2Ia_ZlkTQ4XFWJA',
         dfs.append(pd.read_csv(f'data/{channel_id}_output.csv', sep=SEP))
 
     df = pd.concat(dfs)
-    df.to_csv('output.csv', sep=SEP, index=False)
+    df.to_csv('data/output.csv', sep=SEP, index=False)
