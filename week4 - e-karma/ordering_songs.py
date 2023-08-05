@@ -117,5 +117,5 @@ def create_mix(audio):
     for ind in order:
         mix.append(audio_list[ind])
     crossfaded_mix = util.crossfade_list(mix, 48000, fade_len=2)
-    return crossfaded_mix
+    return (crossfaded_mix, order)
     #Audio(crossfaded_mix, rate=48000)

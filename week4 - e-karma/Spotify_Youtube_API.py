@@ -39,7 +39,7 @@ def get_songs_artists(token, playlist_id):
             if len(song["artists"])>1:
                 artist_names.append(artist["name"])
             else:
-                artist_names = artist["name"]
+                artist_names = [artist["name"]]
         data.append((song_name,artist_names))
     return data
 
@@ -66,7 +66,7 @@ from apiclient.discovery import build
 
 def find_videoID(l):
     print(len(l))
-    yt_api_key = "AIzaSyAX2j7n39S3r3ra3M1nAedUQlqY0Usvb8Y"
+    yt_api_key = "AIzaSyAJASCE1bJiNMVLJ41HwXauH6Ai_iOv79U"
     videoIds = []
     for i in range(len(l)):
         print(i)
