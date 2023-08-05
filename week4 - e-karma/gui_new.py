@@ -40,11 +40,11 @@ def prediction_to_index(pred, cutoff):
         end_idx = good_dp.shape[0]
 
     dif = end_idx - start_idx
-    if dif < 3:
+    if dif < 4:
         if (start_idx + 3) > good_dp.shape[0]:
-            start_idx = end_idx - 3
+            start_idx = end_idx - 4
         else:
-            end_idx = start_idx + 3
+            end_idx = start_idx + 4
 
     return start_idx, end_idx
 
