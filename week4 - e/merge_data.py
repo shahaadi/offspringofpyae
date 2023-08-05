@@ -5,7 +5,7 @@ import blosc
 import pickle
 
 start = 0
-end = 1110
+end = 4283
 interval = 25
 file_cnt = math.ceil((end - start) / interval)
 

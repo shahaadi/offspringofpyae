@@ -59,7 +59,7 @@ def csv_to_spectrogram_npy(path, start_idx, end_idx):
     pickled_data = pickle.dumps(all_ps_dbs)
     compressed_pickle = blosc.compress(pickled_data)
 
-    with open(f'all_ps_dbs/all_ps_dbs_{start_idx}_to_{end_idx}.dat', 'wb') as f:
+    with open(f'all_ps_dbs/all_ps_dbs_{start_idx}_to_{end_idx}.npy', 'wb') as f:
         f.write(compressed_pickle)
 
 parser = argparse.ArgumentParser()

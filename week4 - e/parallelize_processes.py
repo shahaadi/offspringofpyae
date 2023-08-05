@@ -1,8 +1,16 @@
 import subprocess
 import math
+import argparse
 
-global_start = 0
-global_end = 4283
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--start-idx', type=int)
+parser.add_argument('--end-idx', type=int)
+
+args = parser.parse_args()
+
+global_start = args.start_idx
+global_end = args.end_idx
 global_interval = 500
 
 run_cnt = math.ceil((global_end - global_start) / global_interval)

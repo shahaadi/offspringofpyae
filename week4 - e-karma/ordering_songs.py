@@ -79,7 +79,7 @@ def create_mix(audio):
 
     # create the order in which the songs should be played
     for x in distances:
-        distances[x].sort(key=lambda y:y[1])
+        distances[x].sort(key=lambda y:y[0])
     index = random.randint(0, len(distances) - 1)
     order = [index] # list of numbers that represent the song index in audio_paths
     for _ in range(0, len(audio_list) - 1):
