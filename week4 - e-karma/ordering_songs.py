@@ -92,7 +92,7 @@ def create_mix(audio):
 
 
     # fade in the first song and fade out the last song
-    def fade_in(audio, sampling_rate=48000, duration=4.0):
+    def fade_in(audio, sampling_rate=48000, duration=2.0):
         length = int(duration*sampling_rate)
         start = 0
         end = start + length
@@ -100,7 +100,7 @@ def create_mix(audio):
         fade_curve = np.linspace(0.0, 1.0, length)
         audio[start:end] = audio[start:end] * fade_curve
 
-    def fade_out(audio, sampling_rate=48000, duration=3.0):
+    def fade_out(audio, sampling_rate=48000, duration=2.0):
         length = int(duration*sampling_rate)
         end = audio.shape[0]
         start = end - length

@@ -21,6 +21,8 @@ global PAUSED
 PAUSED = False
 global MIX
 MIX = None
+global F
+F = None
 
 def prediction_to_index(pred, cutoff):
     pred *= 1 / pred.max()
@@ -47,12 +49,12 @@ def prediction_to_index(pred, cutoff):
     return start_idx, end_idx
 
 def add_songs():
-    # spotify_playlist = text_box.get("1.0", "end-1c")
-    spotify_playlist = 'https://open.spotify.com/playlist/7IXaLrFAFxmUELfKUycf1H?si=5b9991759b0d479b'
+    spotify_playlist = text_box.get("1.0", "end-1c")
+    # spotify_playlist = 'https://open.spotify.com/playlist/7IXaLrFAFxmUELfKUycf1H?si=5b9991759b0d479b'
     spotify_string = urlparse(spotify_playlist).path.split('/')[-1]
     print(spotify_string)
     l = get_songs_artists(get_token(), spotify_string)
-    l = l[0:20]
+    l = l[0:5]
     video_ids = find_videoID(l)
     audio, spectrograms = video_ids_spectrograms(video_ids)
     spectrograms = np.expand_dims(spectrograms, axis=-1)
@@ -67,17 +69,17 @@ def add_songs():
     
     global MIX
     MIX = create_mix(audio_files) # pass in spotify playlist to code for determining artist and song names, then pass that to model, then pass to order, then get the mix
-    write('playlist.wav', 48000, MIX)
-    pygame.mixer.music.load('playlist.wav')
-    pygame.mixer.music.play(loops=0)
 
 def play_song():
     # mp3_file = window.get('active')
     # mp3_file = mp3_file
     # pygame.mixer.music.load(mp3_file)
     global MIX
-    write('playlist.wav', 48000, MIX)
-    pygame.mixer.music.load('playlist.wav')
+    global F
+    if F == None:
+        write('playlist.wav', 48000, MIX)
+        F = "playlist.wav"
+    pygame.mixer.music.load(F)
     pygame.mixer.music.play(loops=0)
     
 def stop_song():
