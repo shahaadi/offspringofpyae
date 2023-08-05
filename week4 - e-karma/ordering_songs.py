@@ -67,8 +67,7 @@ def create_mix(audio):
     # value: [(cosine_similarity, second_song_id), (cosine_similarity, second_song_id)]
     #distances = {i:[] for i in range(len(audio_paths))}
     distances = {i:[] for i in range(len(audio_list))}
-    num = 3*48000
-    # num = 1000
+    num = 48000
     for i in range(len(distances)):
         for j in range(i + 1, len(distances)):
             dist = cos_dist(spec_list[i][-num:], spec_list[j][:num])
