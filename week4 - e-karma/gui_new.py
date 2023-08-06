@@ -267,9 +267,9 @@ frame.pack()
 
 # back_btn = tk.Button(frame, image=back_btn_img, borderwidth=0)
 # forward_btn = tk.Button(frame, image=forward_btn_img, borderwidth=0)
-play_btn = tk.Button(frame, image=play_btn_img, borderwidth=0, command=play_song)
-pause_btn = tk.Button(frame, image=pause_btn_img, borderwidth=0, command=lambda: pause_song(PAUSED))
-stop_btn = tk.Button(frame, image=stop_btn_img, borderwidth=0, command=stop_song)
+play_btn = tk.Button(frame, image=play_btn_img, borderwidth=0, bg='black', command=play_song)
+pause_btn = tk.Button(frame, image=pause_btn_img, borderwidth=0, bg='black', command=lambda: pause_song(PAUSED))
+stop_btn = tk.Button(frame, image=stop_btn_img, borderwidth=0, bg='black', command=stop_song)
 
 # back_btn.grid(row=0, column=0, padx=10, pady=20)
 # forward_btn.grid(row=0, column=4, padx=0, pady=20)
