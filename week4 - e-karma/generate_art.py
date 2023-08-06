@@ -10,6 +10,7 @@ import librosa
 import ffmpeg
 from librosa import onset
 from librosa.feature import melspectrogram
+import matplotlib.pyplot as plt
 
 from diffusers import StableDiffusionPipeline
 from diffusers.schedulers import LMSDiscreteScheduler
@@ -62,10 +63,13 @@ def diffuse(
 
     cond_latents = 1 / 0.18215 * cond_latents
     image = pipe.vae.decode(cond_latents)
-
+    image = image.tensor
     image = (image / 2 + 0.5).clamp(0, 1)
     image = image.cpu().permute(0, 2, 3, 1).numpy()
     image = (image[0] * 255).astype(np.uint8)
+
+    plt.imshow(image)
+    plt.show()
 
     return image
 
@@ -96,7 +100,7 @@ def get_audio_features(audio_input):
 
     # Compute the beat track
     onset_envelope = onset.onset_strength(y=audio_data, sr=sample_rate)
-    bpm, _ = onset.beat_track(onset_envelope=onset_envelope, sr=sample_rate)
+    bpm, _ = librosa.beat.beat_track(onset_envelope=onset_envelope, sr=sample_rate)
 
     return log_mel_spectrogram, sample_rate, bpm
 
@@ -113,6 +117,14 @@ def main(
         width = 512,
         height = 512,
 ):
+    print("Number of prompts:", len(prompts))
+    print("Number of seeds:", len(seeds))
+    print("Prompts:")
+    for prompt in prompts:
+        print(prompt)
+    print("Seeds:")
+    for seed in seeds:
+        print(seed)
     assert len(prompts) == len(seeds)
     assert height % 8 == 0 and width % 8 == 0
 

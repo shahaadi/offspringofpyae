@@ -10,6 +10,9 @@ from pydub.playback import play
 from urllib.parse import urlparse
 import tkinter.ttk as ttk
 import tensorflow as tf
+import time
+import mutagen
+from mutagen.wave import WAVE
 
 from ordering_songs import create_mix
 from Spotify_Youtube_API import get_songs_artists, get_token, find_videoID
@@ -23,6 +26,8 @@ global MIX
 MIX = None
 global F
 F = None
+global SPOTIFY
+SPOTIFY = None
 
 def prediction_to_index(pred, cutoff):
     pred *= 1 / pred.max()
@@ -40,13 +45,33 @@ def prediction_to_index(pred, cutoff):
         end_idx = good_dp.shape[0]
 
     dif = end_idx - start_idx
-    if dif < 3:
+    if dif < 4:
         if (start_idx + 3) > good_dp.shape[0]:
-            start_idx = end_idx - 3
+            start_idx = end_idx - 4
         else:
-            end_idx = start_idx + 3
+            end_idx = start_idx + 4
 
     return start_idx, end_idx
+
+def song_time():
+    global F
+    current_time = pygame.mixer.music.get_pos() / 1000
+    converted_current_time = time.strftime('%M:%S', time.gmtime(current_time))
+    
+    """
+    with wave.open(F) as mywav:
+        song_length = mywav.getnframes() / mywav.getframerate()
+    """
+    
+    cal_length_file = WAVE(F)
+    file_info = cal_length_file.info
+    song_length = int(file_info.length)
+    converted_song_length = time.strftime('%M:%S', time.gmtime(song_length))   
+    
+    time_bar.config(text=f'Time Elapsed: {converted_current_time} of {converted_song_length}')
+    time_bar.after(1000, song_time)
+    
+    
 
 def add_songs():
     spotify_playlist = text_box.get("1.0", "end-1c")
@@ -70,6 +95,51 @@ def add_songs():
     global MIX
     MIX = create_mix(audio_files) # pass in spotify playlist to code for determining artist and song names, then pass that to model, then pass to order, then get the mix
 
+def add_songs_updated():
+    global SPOTIFY
+    spotify_playlist = text_box.get("1.0", "end-1c")
+    # spotify_playlist = 'https://open.spotify.com/playlist/7IXaLrFAFxmUELfKUycf1H?si=5b9991759b0d479b'
+    spotify_string = urlparse(spotify_playlist).path.split('/')[-1]
+    l = get_songs_artists(get_token(), spotify_string)
+    l = l[0:5]
+    SPOTIFY = l
+    print(l)
+    for s in l:
+        display = "Song: " + s[0] + ", Artist: " + s[1][0] 
+        if len(s[1]) > 1:
+            for x in range(1, len(s[1])):
+                display += ", " + s[1][x]
+        display += "\n"
+        display_songs_box.insert('end', display)
+
+def create_mashup():
+    global SPOTIFY
+    if SPOTIFY != None:
+        video_ids = find_videoID(SPOTIFY)
+        audio, spectrograms = video_ids_spectrograms(video_ids)
+        spectrograms = np.expand_dims(spectrograms, axis=-1)
+        pred = model.predict(spectrograms)
+        
+        cutoff = 0.8
+        
+        audio_files = []
+        for i in range(len(video_ids)):
+            start_idx, end_idx = prediction_to_index(pred[i], cutoff)
+            audio_files.append(audio[i, start_idx * 48000:end_idx * 48000])
+        
+        global MIX
+        MIX, order = create_mix(audio_files) # pass in spotify playlist to code for determining artist and song names, then pass that to model, then pass to order, then get the mix
+        
+        display_songs_box.delete('1.0', 'end')
+        for index in order:
+            display = "Song: " + SPOTIFY[index][0] + ", Artist: " + SPOTIFY[index][1][0] 
+            if len(SPOTIFY[index][1]) > 1:
+                for x in range(1, len(SPOTIFY[index][1])):
+                    display += ", " + SPOTIFY[index][1][x]
+            display += "\n"
+            display_songs_box.insert('end', display)
+        
+
 def play_song():
     # mp3_file = window.get('active')
     # mp3_file = mp3_file
@@ -82,9 +152,12 @@ def play_song():
     pygame.mixer.music.load(F)
     pygame.mixer.music.play(loops=0)
     
+    song_time()
+    
 def stop_song():
     PAUSED = False
     pygame.mixer.music.stop()
+    time_bar.config(text='')
     
 def pause_song(paused):
     global PAUSED
@@ -100,7 +173,7 @@ def pause_song(paused):
 
 root = tk.Tk()
 root.title("AI Music Mixer")
-root.geometry("500x300")
+root.geometry("880x500")
 
 pygame.mixer.init()
 
@@ -109,10 +182,14 @@ window = tk.Listbox(root, bg="purple", fg="white", width=60, selectbackground="o
 window.pack(pady=20)
 """
 
-text_box = tk.Text(root, height=10, width=40)
+text_box = tk.Text(root, height=2, width=100)
 text_box.pack()
-open_btn = tk.Button(root, text="Link to Spotify Playlist", command=add_songs)
+display_songs_box = tk.Text(root, height=10, width=100)
+display_songs_box.pack()
+open_btn = tk.Button(root, text="Link to Spotify Playlist", command=add_songs_updated)
 open_btn.pack()
+play_music_btn = tk.Button(root, text="Create the Mashup", command=create_mashup)
+play_music_btn.pack()
 
 # create buttons
 back_btn_img = Image.open('./week4 - e-karma/gui_pictures/previous_song_button_2.png')
@@ -153,13 +230,10 @@ pause_btn.grid(row=0, column=1, padx=10)
 stop_btn.grid(row=0, column=3, padx=10)
 
 
-# create the box for inputting songs
-"""
-song_menu = tk.Menu(root)
-root.config(menu=song_menu)
-added_menu = tk.Menu(song_menu)
-song_menu.add_cascade(label="Add Songs", menu=added_menu)
-added_menu.add_command(label="Choose songs to add to the playlist", command=add_songs)
-"""
+# create time status bar
+time_bar = tk.Label(root, text='', bd=1, relief='groove', anchor='e')
+time_bar.pack(fill='x', side='bottom', ipady=2)
+
+
 
 root.mainloop()
