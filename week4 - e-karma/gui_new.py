@@ -246,15 +246,15 @@ play_music_btn.pack(pady=(5, 30))
 # forward_btn_img = forward_btn_img.resize((70, 70))
 # forward_btn_img = ImageTk.PhotoImage(forward_btn_img)
 
-play_btn_img = Image.open('./week4 - e-karma/gui_pictures/play_btn.png')
+play_btn_img = Image.open('./week4 - e-karma/gui_pictures/play_play.png')
 play_btn_img = play_btn_img.resize((50, 50))
 play_btn_img = ImageTk.PhotoImage(play_btn_img)
 
-pause_btn_img = Image.open('./week4 - e-karma/gui_pictures/pause_button.png')
+pause_btn_img = Image.open('./week4 - e-karma/gui_pictures/pause_pause.png')
 pause_btn_img = pause_btn_img.resize((50, 50))
 pause_btn_img = ImageTk.PhotoImage(pause_btn_img)
 
-stop_btn_img = Image.open('./week4 - e-karma/gui_pictures/stop_button.png')
+stop_btn_img = Image.open('./week4 - e-karma/gui_pictures/restart_restart.png')
 stop_btn_img = stop_btn_img.resize((50, 50))
 stop_btn_img = ImageTk.PhotoImage(stop_btn_img)
 
