@@ -159,6 +159,7 @@ def create_mashup():
         MIX, order = create_mix(audio_files) # pass in spotify playlist to code for determining artist and song names, then pass that to model, then pass to order, then get the mix
         
         display_songs_box.delete('1.0', 'end')
+        display_songs_box.insert('end', 'SONGS REMIXED:\n\n')
         for index in order:
             display = "Song: " + SPOTIFY[index][0] + ", Artist: " + SPOTIFY[index][1][0] 
             if len(SPOTIFY[index][1]) > 1:
