@@ -28,6 +28,9 @@ global F
 F = None
 global SPOTIFY
 SPOTIFY = None
+global song_length
+global STOPPED
+STOPPED = False
 
 def prediction_to_index(pred, cutoff):
     pred *= 1 / pred.max()
@@ -45,17 +48,23 @@ def prediction_to_index(pred, cutoff):
         end_idx = good_dp.shape[0]
 
     dif = end_idx - start_idx
-    if dif < 4:
-        if (start_idx + 3) > good_dp.shape[0]:
-            start_idx = end_idx - 4
+    if dif < 9:
+        if (start_idx + 9) > good_dp.shape[0]:
+            start_idx = end_idx - 9
         else:
-            end_idx = start_idx + 4
+            end_idx = start_idx + 9
 
     return start_idx, end_idx
 
 def song_time():
+    global STOPPED
+    if STOPPED:
+        return
     global F
+    global song_length
+    global PAUSED
     current_time = pygame.mixer.music.get_pos() / 1000
+    # slider_label.config(text=f'Slider: {int(slider.get())} and Song Pos: {int(current_time)}')
     converted_current_time = time.strftime('%M:%S', time.gmtime(current_time))
     
     """
@@ -68,7 +77,24 @@ def song_time():
     song_length = int(file_info.length)
     converted_song_length = time.strftime('%M:%S', time.gmtime(song_length))   
     
-    time_bar.config(text=f'Time Elapsed: {converted_current_time} of {converted_song_length}')
+    current_time += 1
+    if int(slider.get()) == int(song_length):
+        time_bar.config(text=f'Time Elapsed: {converted_song_length} of {converted_song_length}')
+    elif PAUSED:
+        pass
+    elif int(slider.get()) == int(current_time):
+        slider_position = int(song_length)
+        slider.config(to=slider_position, value=int(current_time))
+    else:
+        slider_position = int(song_length)
+        slider.config(to=slider_position, value=int(slider.get()))
+        converted_current_time = time.strftime('%M:%S', time.gmtime(slider.get()))
+        time_bar.config(text=f'Time Elapsed: {converted_current_time} of {converted_song_length}')
+        next_time = int(slider.get()) + 1
+        slider.config(value=next_time)
+    
+    # time_bar.config(text=f'Time Elapsed: {converted_current_time} of {converted_song_length}')
+    # slider.config(value=int(current_time))
     time_bar.after(1000, song_time)
     
     
@@ -146,6 +172,9 @@ def play_song():
     # pygame.mixer.music.load(mp3_file)
     global MIX
     global F
+    global song_length
+    global STOPPED
+    STOPPED = False
     if F == None:
         write('playlist.wav', 48000, MIX)
         F = "playlist.wav"
@@ -153,11 +182,17 @@ def play_song():
     pygame.mixer.music.play(loops=0)
     
     song_time()
+    # slider_position = int(song_length)
+    # slider.config(to=slider_position, value=0)
     
 def stop_song():
+    time_bar.config(text='')
+    slider.config(value=0)
     PAUSED = False
     pygame.mixer.music.stop()
     time_bar.config(text='')
+    global STOPPED
+    STOPPED = True
     
 def pause_song(paused):
     global PAUSED
@@ -168,12 +203,17 @@ def pause_song(paused):
     else:
         pygame.mixer.music.unpause()
         PAUSED = False
-    
+        
+def slide(x):
+    # slider_label.config(text=f'{int(slider.get())} of {int(song_length)}')
+    global F
+    pygame.mixer.music.load(F)
+    pygame.mixer.music.play(loops=0, start=int(slider.get()))
     
 
 root = tk.Tk()
 root.title("AI Music Mixer")
-root.geometry("880x500")
+root.geometry("880x700")
 
 pygame.mixer.init()
 
@@ -185,11 +225,11 @@ window.pack(pady=20)
 text_box = tk.Text(root, height=2, width=100)
 text_box.pack()
 display_songs_box = tk.Text(root, height=10, width=100)
-display_songs_box.pack()
+display_songs_box.pack(pady=10)
 open_btn = tk.Button(root, text="Link to Spotify Playlist", command=add_songs_updated)
 open_btn.pack()
 play_music_btn = tk.Button(root, text="Create the Mashup", command=create_mashup)
-play_music_btn.pack()
+play_music_btn.pack(pady=2)
 
 # create buttons
 back_btn_img = Image.open('./week4 - e-karma/gui_pictures/previous_song_button_2.png')
@@ -223,17 +263,23 @@ play_btn = tk.Button(frame, image=play_btn_img, borderwidth=0, command=play_song
 pause_btn = tk.Button(frame, image=pause_btn_img, borderwidth=0, command=lambda: pause_song(PAUSED))
 stop_btn = tk.Button(frame, image=stop_btn_img, borderwidth=0, command=stop_song)
 
-back_btn.grid(row=0, column=0, padx=10)
-forward_btn.grid(row=0, column=4, padx=0)
-play_btn.grid(row=0, column=2, padx=10)
-pause_btn.grid(row=0, column=1, padx=10)
-stop_btn.grid(row=0, column=3, padx=10)
+back_btn.grid(row=0, column=0, padx=10, pady=20)
+forward_btn.grid(row=0, column=4, padx=0, pady=20)
+play_btn.grid(row=0, column=2, padx=10, pady=20)
+pause_btn.grid(row=0, column=1, padx=10, pady=20)
+stop_btn.grid(row=0, column=3, padx=10, pady=20)
 
 
 # create time status bar
 time_bar = tk.Label(root, text='', bd=1, relief='groove', anchor='e')
 time_bar.pack(fill='x', side='bottom', ipady=2)
 
+# create slider
+slider = ttk.Scale(root, from_=0, to=100, orient='horizontal', value=0, command=slide, length=650)
+slider.pack()
+
+# slider_label = tk.Label(root, text="0")
+# slider_label.pack(pady=10)
 
 
 root.mainloop()
