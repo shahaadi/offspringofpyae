@@ -11,6 +11,10 @@ import ffmpeg
 from librosa import onset
 from librosa.feature import melspectrogram
 import matplotlib.pyplot as plt
+import pygame
+import time
+from moviepy.editor import ImageSequenceClip, AudioFileClip, CompositeVideoClip
+
 
 from diffusers import StableDiffusionPipeline
 from diffusers.schedulers import LMSDiscreteScheduler
@@ -63,13 +67,12 @@ def diffuse(
 
     cond_latents = 1 / 0.18215 * cond_latents
     image = pipe.vae.decode(cond_latents)
-    image = image.tensor
+    image = image.sample
     image = (image / 2 + 0.5).clamp(0, 1)
     image = image.cpu().permute(0, 2, 3, 1).numpy()
     image = (image[0] * 255).astype(np.uint8)
 
-    plt.imshow(image)
-    plt.show()
+   
 
     return image
 
@@ -104,18 +107,25 @@ def get_audio_features(audio_input):
 
     return log_mel_spectrogram, sample_rate, bpm
 
+
+
+
+
+
+
 def main(
         audio_input,
-        prompts = ["abstract geometry", "cosmic landscape"], 
+        prompts=["abstract geometry", "cosmic landscape"],
         seeds=[243, 523],
-        name = 'ekarma_video_output',
-        rootdir = './dreams',
-        num_steps = 72,  
-        num_inference_steps = 50,
-        guidance_scale = 7.5,
-        eta = 0.0,
-        width = 512,
-        height = 512,
+        name='ekarma_video_output',
+        rootdir='.',
+        num_steps=72,
+        num_inference_steps=50,
+        guidance_scale=7.5,
+        eta=0.0,
+        width=512,
+        height=512,
+        fps=24
 ):
     print("Number of prompts:", len(prompts))
     print("Number of seeds:", len(seeds))
@@ -130,8 +140,8 @@ def main(
 
     outdir = os.path.join(rootdir, name)
     os.makedirs(outdir, exist_ok=True)
+    print(f"Output directory created at {outdir}")
 
-    # Initializing pipe and setting the torch_device to "cpu"
     pipe = StableDiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-3", use_auth_token=True)
     torch_device = torch.device("cpu")
     pipe.unet.to(torch_device)
@@ -139,7 +149,7 @@ def main(
     pipe.text_encoder.to(torch_device)
 
     prompt_embeddings = []
-    for prompt in prompts:   
+    for prompt in prompts:
         text_input = pipe.tokenizer(
             prompt,
             padding="max_length",
@@ -151,7 +161,7 @@ def main(
             embed = pipe.text_encoder(text_input.input_ids.to(torch_device))[0]
 
         prompt_embeddings.append(embed)
-    
+
     prompt_embedding_a, *prompt_embeddings = prompt_embeddings
     init_seed, *seeds = seeds
     init_a = torch.randn(
@@ -159,19 +169,15 @@ def main(
         device=torch_device,
         generator=torch.Generator().manual_seed(init_seed)
     )
-    
-    # Get the audio features
-    log_mel_spectrogram, sample_rate, bpm = get_audio_features(audio_input)
 
-    # Compute the duration of each image frame based on the audio beat
+    log_mel_spectrogram, sample_rate, bpm = get_audio_features(audio_input)
     frame_duration = 60.0 / bpm
     frame_hop_duration = frame_duration / num_steps
 
-    # Convert to image
     image_a = diffuse(
         pipe,
         prompt_embedding_a,
-        init_a,  
+        init_a,
         num_inference_steps,
         guidance_scale,
         eta,
@@ -187,7 +193,7 @@ def main(
         image_b = diffuse(
             pipe,
             prompt_embedding,
-            init_b,  
+            init_b,
             num_inference_steps,
             guidance_scale,
             eta,
@@ -197,18 +203,53 @@ def main(
         images.append(image_b)
         image_a = image_b
 
-    # Save frames as PNGs
-    for i, img in enumerate(images):
-        img = Image.fromarray(img)
-        img.save(os.path.join(outdir, f'frame_{i:04}.png'))
+    output_video_path = os.path.join(outdir, "output_video.mp4")
+    save_and_play_audio_with_images(audio_input, images, frame_duration, output_video_path)
+    print(f"Video saved at {output_video_path}")
 
-    # Convert PNG frames to video
-    (
-        ffmpeg
-        .input(os.path.join(outdir, 'frame_*.png'), pattern_type='glob', framerate=25)
-        .output(os.path.join(outdir, 'video.mp4'))
-        .run()
-    )
+
+def save_and_play_audio_with_images(audio_path, images, frame_duration, output_video_path):
+    pygame.init()
+    screen = pygame.display.set_mode((512, 512))
+    pygame.mixer.init()
+    pygame.mixer.music.load(audio_path)
+    pygame.mixer.music.play()
+
+    frames = []
+
+    for image in images:
+        print("Shape:", image.shape)
+        print("Data type:", image.dtype)
+        image = image.cpu().numpy() if isinstance(image, torch.Tensor) else image
+        # If the shape is (channels, height, width), then permute it
+        if image.shape[0] == 3 or image.shape[0] == 4:
+            image = image.transpose(1, 2, 0)
+
+        # Normalize the image to [0, 1] if it's not already
+        if image.max() > 1:
+            image = image / 255.0
+
+        # Convert to uint8
+        image = (image * 255).astype(np.uint8)
+        image_pil = Image.fromarray(image)
+        pygame_image = pygame.image.fromstring(image_pil.tobytes(), image_pil.size, image_pil.mode)
+        screen.blit(pygame_image, (0, 0))
+        pygame.display.flip()   
+        time.sleep(frame_duration)
+        frames.append(image_pil)  # Appending the PIL image
+    
+    
+
+    audio = AudioFileClip(audio_path)
+    frames = [np.array(image) for image in frames]
+
+    clip = ImageSequenceClip(frames, fps=1.0 / frame_duration)
+    final_clip = CompositeVideoClip([clip.set_audio(audio)])
+    final_clip.write_videofile(output_video_path, codec="libx264", audio_codec="aac")
+
+    pygame.quit()
+
+
 
 if __name__ == '__main__':
     audio_input = input("Please enter the audio file path: ")
