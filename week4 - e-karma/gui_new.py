@@ -12,6 +12,7 @@ import tkinter.ttk as ttk
 import tensorflow as tf
 import time
 import mutagen
+import tkinter.font
 from mutagen.wave import WAVE
 
 from ordering_songs import create_mix
@@ -130,6 +131,7 @@ def add_songs_updated():
     l = l[0:5]
     SPOTIFY = l
     print(l)
+    display_songs_box.delete('1.0', 'end')
     for s in l:
         display = "Song: " + s[0] + ", Artist: " + s[1][0] 
         if len(s[1]) > 1:
@@ -213,34 +215,36 @@ def slide(x):
 
 root = tk.Tk()
 root.title("AI Music Mixer")
-root.geometry("880x700")
+root.geometry("870x540")
+bg = tk.PhotoImage(file='./week4 - e-karma/gui_pictures/bg_pic_2.png')
+label1 = tk.Label(root, image=bg)
+label1.place(x=0, y=0)
 
 pygame.mixer.init()
 
-"""
-window = tk.Listbox(root, bg="purple", fg="white", width=60, selectbackground="orange", selectforeground="grey")
-window.pack(pady=20)
-"""
+font_tuple = tk.font.Font(family="Bungee", size=11, weight='bold')
 
-text_box = tk.Text(root, height=2, width=100)
-text_box.pack()
-display_songs_box = tk.Text(root, height=10, width=100)
+text_box = tk.Text(root, height=2, width=100, font=font_tuple)
+text_box.pack(pady=(50, 0))
+display_songs_box = tk.Text(root, height=10, width=100, font=font_tuple)
 display_songs_box.pack(pady=10)
-open_btn = tk.Button(root, text="Link to Spotify Playlist", command=add_songs_updated)
+open_btn = tk.Button(root, text="LINK TO SPOTIFY PLAYLIST", font=font_tuple, command=add_songs_updated)
+open_btn.config(bg='white')
 open_btn.pack()
-play_music_btn = tk.Button(root, text="Create the Mashup", command=create_mashup)
-play_music_btn.pack(pady=2)
+play_music_btn = tk.Button(root, text="CREATE THE MASHUP", font=font_tuple, command=create_mashup)
+play_music_btn.config(bg='white')
+play_music_btn.pack(pady=(5, 30))
 
 # create buttons
-back_btn_img = Image.open('./week4 - e-karma/gui_pictures/previous_song_button_2.png')
-back_btn_img = back_btn_img.resize((50, 50))
-back_btn_img = ImageTk.PhotoImage(back_btn_img)
+# back_btn_img = Image.open('./week4 - e-karma/gui_pictures/previous_song_button_2.png')
+# back_btn_img = back_btn_img.resize((50, 50))
+# back_btn_img = ImageTk.PhotoImage(back_btn_img)
 
-forward_btn_img = Image.open('./week4 - e-karma/gui_pictures/next_song_button_2.png')
-forward_btn_img = forward_btn_img.resize((70, 70))
-forward_btn_img = ImageTk.PhotoImage(forward_btn_img)
+# forward_btn_img = Image.open('./week4 - e-karma/gui_pictures/next_song_button_2.png')
+# forward_btn_img = forward_btn_img.resize((70, 70))
+# forward_btn_img = ImageTk.PhotoImage(forward_btn_img)
 
-play_btn_img = Image.open('./week4 - e-karma/gui_pictures/play_button_2.png')
+play_btn_img = Image.open('./week4 - e-karma/gui_pictures/play_btn.png')
 play_btn_img = play_btn_img.resize((50, 50))
 play_btn_img = ImageTk.PhotoImage(play_btn_img)
 
@@ -254,29 +258,31 @@ stop_btn_img = ImageTk.PhotoImage(stop_btn_img)
 
 # create button functionality
 frame = tk.Frame(root)
+frame.config(bg='white')
 frame.pack()
 
 
-back_btn = tk.Button(frame, image=back_btn_img, borderwidth=0)
-forward_btn = tk.Button(frame, image=forward_btn_img, borderwidth=0)
+# back_btn = tk.Button(frame, image=back_btn_img, borderwidth=0)
+# forward_btn = tk.Button(frame, image=forward_btn_img, borderwidth=0)
 play_btn = tk.Button(frame, image=play_btn_img, borderwidth=0, command=play_song)
 pause_btn = tk.Button(frame, image=pause_btn_img, borderwidth=0, command=lambda: pause_song(PAUSED))
 stop_btn = tk.Button(frame, image=stop_btn_img, borderwidth=0, command=stop_song)
 
-back_btn.grid(row=0, column=0, padx=10, pady=20)
-forward_btn.grid(row=0, column=4, padx=0, pady=20)
-play_btn.grid(row=0, column=2, padx=10, pady=20)
-pause_btn.grid(row=0, column=1, padx=10, pady=20)
-stop_btn.grid(row=0, column=3, padx=10, pady=20)
+# back_btn.grid(row=0, column=0, padx=10, pady=20)
+# forward_btn.grid(row=0, column=4, padx=0, pady=20)
+play_btn.grid(row=0, column=1, padx=30)
+pause_btn.grid(row=0, column=0, padx=30)
+stop_btn.grid(row=0, column=2, padx=30)
 
 
 # create time status bar
 time_bar = tk.Label(root, text='', bd=1, relief='groove', anchor='e')
+time_bar.config(bg='white')
 time_bar.pack(fill='x', side='bottom', ipady=2)
 
 # create slider
 slider = ttk.Scale(root, from_=0, to=100, orient='horizontal', value=0, command=slide, length=650)
-slider.pack()
+slider.pack(pady=(5, 0))
 
 # slider_label = tk.Label(root, text="0")
 # slider_label.pack(pady=10)
