@@ -224,15 +224,16 @@ pygame.mixer.init()
 
 font_tuple = tk.font.Font(family="Bungee", size=11, weight='bold')
 
-text_box = tk.Text(root, height=2, width=100, font=font_tuple)
+text_box = tk.Text(root, height=2, width=100, font=font_tuple, bg='black', fg='white')
+text_box.insert(tk.INSERT, "Paste Link Here: ")
 text_box.pack(pady=(50, 0))
-display_songs_box = tk.Text(root, height=10, width=100, font=font_tuple)
+display_songs_box = tk.Text(root, height=10, width=100, font=font_tuple, bg='black', fg='white')
 display_songs_box.pack(pady=10)
-open_btn = tk.Button(root, text="LINK TO SPOTIFY PLAYLIST", font=font_tuple, command=add_songs_updated)
-open_btn.config(bg='white')
+open_btn = tk.Button(root, text="QUERY SPOTIFY PLAYLIST", font=font_tuple, fg='white', command=add_songs_updated)
+open_btn.config(bg='black')
 open_btn.pack()
-play_music_btn = tk.Button(root, text="CREATE THE MASHUP", font=font_tuple, command=create_mashup)
-play_music_btn.config(bg='white')
+play_music_btn = tk.Button(root, text="CREATE THE MASHUP", font=font_tuple, fg='white', command=create_mashup)
+play_music_btn.config(bg='black')
 play_music_btn.pack(pady=(5, 30))
 
 # create buttons
@@ -258,7 +259,7 @@ stop_btn_img = ImageTk.PhotoImage(stop_btn_img)
 
 # create button functionality
 frame = tk.Frame(root)
-frame.config(bg='white')
+frame.config(bg='black')
 frame.pack()
 
 
@@ -276,8 +277,8 @@ stop_btn.grid(row=0, column=2, padx=30)
 
 
 # create time status bar
-time_bar = tk.Label(root, text='', bd=1, relief='groove', anchor='e')
-time_bar.config(bg='white')
+time_bar = tk.Label(root, text='', fg='white', font=font_tuple, bd=1, relief='groove', anchor='e')
+time_bar.config(bg='black')
 time_bar.pack(fill='x', side='bottom', ipady=2)
 
 # create slider

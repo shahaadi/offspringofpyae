@@ -7,29 +7,25 @@ import numpy as np
 from IPython.display import Audio
 from pydub import AudioSegment
 from pydub.playback import play
-
-from ordering_songs_old import create_mix
-
-"""
-import os
-directory = "C:/Users/mitta/OneDrive/Documents/BeaverWorksCogWorks"
-files = os.listdir(directory)
-print(files)
-
-d = "C:/Users/mitta/offspringofpyae-6/week4 - e-karma/test songs"
-file = os.listdir(d)
-print(file)
-
-pygame.mixer.init()
-file = "C:/cartoon.mp3"
-pygame.mixer.music.load(file)
-pygame.mixer.music.play(loops=0)
-"""
+import time
+import mutagen
+from mutagen.wave import WAVE
 
 global PAUSED
 PAUSED = False
 global SONG_LIST
 SONG_LIST = []
+global F
+F = None
+
+def song_time():
+    current_time = pygame.mixer.music.get_pos() / 1000
+    converted_current_time = time.strftime('%M:%S', time.gmtime(current_time))
+    time_bar.config(text=converted_current_time)
+    time_bar.after(1000, song_time)
+    cal_length_file = WAVE(F)
+    file_info = cal_length_file.info
+    song_length = int(file_info.length)
 
 def add_songs():
     global SONG_LIST
@@ -45,13 +41,12 @@ def play_song():
     mp3_file = mp3_file
     pygame.mixer.music.load(mp3_file)
     """
-    global SONG_LIST
-    print(SONG_LIST)
-    mix = create_mix(SONG_LIST)
-    print(mix)
-    write('playlist.wav', 48000, mix)
-    pygame.mixer.music.load('playlist.wav')
+    global F
+    if F == None:
+        F = "./week4 - e-karma/test songs/Cartoon - On & On (feat. Daniel Levi) [NCS Release].mp3"
+    pygame.mixer.music.load(F)
     pygame.mixer.music.play(loops=0)
+    song_time()
     
 def stop_song():
     PAUSED = False
@@ -66,7 +61,6 @@ def pause_song(paused):
     else:
         pygame.mixer.music.unpause()
         PAUSED = False
-    
     
 
 root = tk.Tk()
@@ -122,5 +116,9 @@ root.config(menu=song_menu)
 added_menu = tk.Menu(song_menu)
 song_menu.add_cascade(label="Add Songs", menu=added_menu)
 added_menu.add_command(label="Choose songs to add to the playlist", command=add_songs)
+
+# create time status bar
+time_bar = tk.Label(root, text='', bd=1, relief='groove', anchor='e')
+time_bar.pack(fill='x', side='bottom', ipady=2)
 
 root.mainloop()
