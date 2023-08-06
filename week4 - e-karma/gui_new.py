@@ -34,19 +34,20 @@ global STOPPED
 STOPPED = False
 
 def prediction_to_index(pred, cutoff):
-    pred *= 1 / pred.max()
-    peak = np.argmax(pred)
-    good_dp = pred > cutoff
-    prev_dp = ~good_dp[:peak][::-1]
+    good_dp_i = pred > cutoff
+    peak_i = np.argmax(pred)
+
+    prev_dp = ~good_dp_i[:peak_i][::-1]
     if prev_dp.any():
-        start_idx = peak - np.argmax(prev_dp)
+        start_idx = peak_i - np.argmax(prev_dp)
     else:
         start_idx = 0
-    post_dp = ~good_dp[peak:]
+
+    post_dp = ~good_dp_i[peak_i:]
     if post_dp.any():
-        end_idx = peak + np.argmax(post_dp)
+        end_idx = peak_i + np.argmax(post_dp)
     else:
-        end_idx = good_dp.shape[0]
+        end_idx = good_dp_i.shape[0]
 
     dif = end_idx - start_idx
     if dif < 9:
@@ -148,7 +149,7 @@ def create_mashup():
         spectrograms = np.expand_dims(spectrograms, axis=-1)
         pred = model.predict(spectrograms)
         
-        cutoff = 0.8
+        cutoff = 0.5
         
         audio_files = []
         for i in range(len(video_ids)):
