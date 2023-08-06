@@ -19,7 +19,7 @@ from ordering_songs import create_mix
 from Spotify_Youtube_API import get_songs_artists, get_token, find_videoID
 from spectrogram_download import video_ids_spectrograms
 
-model = tf.keras.models.load_model('week4 - e-karma/test1.keras')
+model = tf.keras.models.load_model('week4 - e-karma/models/test3.keras')
 
 global PAUSED
 PAUSED = False

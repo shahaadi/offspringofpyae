@@ -64,16 +64,16 @@ def get_playlists(token, user_id):
 
 from apiclient.discovery import build
 
+
 def find_videoID(l):
     print(len(l))
-    yt_api_key = "AIzaSyAJASCE1bJiNMVLJ41HwXauH6Ai_iOv79U"
-    videoIds = []
-    for i in range(len(l)):
-        print(i)
-        youtube = build("youtube", "v3", developerKey = yt_api_key)
-        song, artist = l[i]
-        req = youtube.search().list(q= song + " " + " ".join(artist) + " lyrics", part = "snippet", type="video")
-        res = req.execute()
-        videoIds.append(res["items"][0]["id"]["videoId"])
-    print(videoIds)
-    return videoIds
+    video_ids = []
+    for song, artist in l:
+        query = f"{song} {artist} official audio"  # Modify the query to suit your needs
+        with yt_dlp.YoutubeDL({'match_filter': yt_dlp.utils.match_filter_func("type=video"),}) as ydl:
+            result = ydl.extract_info(f'ytsearch:{query}', download=False)
+            if 'entries' in result:
+                video = result['entries'][0]
+                video_ids.append(video['id'])
+    print(video_ids)
+    return video_ids
