@@ -73,7 +73,7 @@ def find_videoID(l):
         query = f"{song} {artist} official audio"  # Modify the query to suit your needs
         with yt_dlp.YoutubeDL({'match_filter': yt_dlp.utils.match_filter_func("type=video"),}) as ydl:
             result = ydl.extract_info(f'ytsearch:{query}', download=False)
-            if 'entries' in result:
+            if 'entries' in result and len(result['entries']) != 0:
                 video = result['entries'][0]
                 video_ids.append(video['id'])
     print(video_ids)

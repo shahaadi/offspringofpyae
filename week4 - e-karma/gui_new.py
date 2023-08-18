@@ -99,7 +99,7 @@ def song_time():
     # slider.config(value=int(current_time))
     time_bar.after(1000, song_time)
     
-    
+playListLength = 5
 
 def add_songs():
     spotify_playlist = text_box.get("1.0", "end-1c")
@@ -107,7 +107,7 @@ def add_songs():
     spotify_string = urlparse(spotify_playlist).path.split('/')[-1]
     print(spotify_string)
     l = get_songs_artists(get_token(), spotify_string)
-    l = l[0:5]
+    l = l[0:playListLength]
     video_ids = find_videoID(l)
     audio, spectrograms = video_ids_spectrograms(video_ids)
     spectrograms = np.expand_dims(spectrograms, axis=-1)
@@ -129,7 +129,7 @@ def add_songs_updated():
     # spotify_playlist = 'https://open.spotify.com/playlist/7IXaLrFAFxmUELfKUycf1H?si=5b9991759b0d479b'
     spotify_string = urlparse(spotify_playlist).path.split('/')[-1]
     l = get_songs_artists(get_token(), spotify_string)
-    l = l[0:5]
+    l = l[0:playListLength]
     SPOTIFY = l
     print(l)
     display_songs_box.delete('1.0', 'end')
